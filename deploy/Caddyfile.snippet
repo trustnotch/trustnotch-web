@@ -1,0 +1,25 @@
+# TrustNotch — Caddy host-split snippet
+# Apply manually: back up the live Caddyfile, paste this block in,
+# then run: caddy validate --config /etc/caddy/Caddyfile
+# and:       systemctl reload caddy   (or: caddy reload --config /etc/caddy/Caddyfile)
+#
+# First deploy: run scripts/deploy.sh to populate /srv/trustnotch-web before reloading.
+
+api.trustnotch.com {
+    reverse_proxy 127.0.0.1:8000
+}
+
+www.trustnotch.com {
+    redir https://trustnotch.com{uri} permanent
+}
+
+trustnotch.com {
+    root * /srv/trustnotch-web
+    encode zstd gzip
+
+    # try_files makes /trustnotch-mcp resolve with or without a trailing slash,
+    # so the server.json websiteUrl works either way.
+    try_files {path} {path}/ {path}.html
+
+    file_server
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Notch mark: a square with a triangular notch cut from the top-right corner -->
+  <rect width="32" height="32" rx="6" fill="#2d4a3e"/>
+  <path d="M8 8 H24 L20 12 H8 Z" fill="#e8f0ec" opacity="0.9"/>
+  <path d="M8 14 H22 V24 H8 Z" fill="#e8f0ec" opacity="0.9"/>
+</svg>

@@ -1,0 +1,342 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="FAQ — TrustNotch"
+  description="Common questions about TrustNotch: how to trust the logs, GDPR erasure, Bitcoin anchoring, EU AI Act Article 12, and how to get access."
+  canonicalPath="/faq"
+>
+  <div class="page-wrapper">
+
+    <!-- Hero -->
+    <section class="section hero" aria-labelledby="faq-hero-heading">
+      <div class="section__label">Frequently asked questions</div>
+      <h1 id="faq-hero-heading">FAQ</h1>
+      <p class="hero__sub">
+        Answers to the questions that come up most often about trust, GDPR,
+        Bitcoin anchoring, regulatory context, and access.
+      </p>
+    </section>
+
+    <!-- Trust / verifier independence -->
+    <section class="section faq-group" aria-labelledby="trust-group">
+      <h2 id="trust-group" class="faq-group__heading">Trust and verification</h2>
+
+      <div class="faq-item" id="faq-trust">
+        <h3 class="faq-item__q">How do I know TrustNotch hasn't tampered with my logs?</h3>
+        <div class="faq-item__a prose">
+          <p>
+            You don't have to trust us. Every entry can be independently verified with
+            the open-source <a href="/how-verification-works"><code>trustnotch</code> verifier</a>
+            — no connection to TrustNotch required. The verifier checks three things locally:
+          </p>
+          <ul class="faq-list">
+            <li>The Ed25519 signature in the receipt matches the exact content submitted.</li>
+            <li>The Merkle inclusion path recomputes correctly to the batch root.</li>
+            <li>The OpenTimestamps proof chains the batch root to a Bitcoin block header.</li>
+          </ul>
+          <p>
+            All three steps run on your machine. A proof that verifies now will verify in
+            ten years, even if TrustNotch has shut down. That is the structural guarantee —
+            not a policy or a promise.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item" id="faq-opensource">
+        <h3 class="faq-item__q">Is the verifier open source?</h3>
+        <div class="faq-item__a prose">
+          <p>
+            Yes. The <code>trustnotch</code> verifier is published on PyPI
+            (<a href="https://pypi.org/project/trustnotch/" rel="noopener noreferrer">pip install trustnotch</a>)
+            with a read-only public mirror at
+            <a href="https://github.com/trustnotch/trustnotch" rel="noopener noreferrer">github.com/trustnotch/trustnotch</a>.
+            You can read exactly what the verifier does and implement the same checks
+            yourself from the RFC&nbsp;6962 and OpenTimestamps specifications.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item" id="faq-pubkeys">
+        <h3 class="faq-item__q">What if TrustNotch rotates its signing keys?</h3>
+        <div class="faq-item__a prose">
+          <p>
+            Receipts are signed with the key in effect at submission time. TrustNotch never
+            removes a published signing key. When a key is rotated, the new key is added to
+            the public <code>/v1/keys</code> directory and the old one is marked retired but
+            stays published — so any proof signed under it remains valid for verification,
+            offline, even years later. New entries are signed with the current key.
+          </p>
+          <p>
+            You can also pin a local key file via <code>TRUSTNOTCH_PUBKEYS_PATH</code> so
+            verification never requires a network call at all.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- GDPR -->
+    <section class="section faq-group" aria-labelledby="gdpr-group">
+      <h2 id="gdpr-group" class="faq-group__heading">GDPR and privacy</h2>
+
+      <div class="faq-item" id="faq-gdpr">
+        <h3 class="faq-item__q">What about GDPR and the right to erasure?</h3>
+        <div class="faq-item__a prose">
+          <p>
+            TrustNotch supports per-entry erasure. You can erase the stored payload for
+            any entry — removing it from TrustNotch's servers — while every proof for
+            that entry and every sibling entry continues to verify.
+          </p>
+          <p>
+            This works because the Merkle tree is built over the <em>hashes</em> of content,
+            not the content itself. Removing a payload from the server doesn't change the
+            hash that was committed to the tree, so no sibling's inclusion proof is affected.
+            This is sometimes described as "crypto-shred by omission."
+          </p>
+          <p>
+            A GDPR erasure request for a specific user's data can be satisfied without
+            retroactively undermining the integrity of surrounding log entries.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item" id="faq-eu">
+        <h3 class="faq-item__q">Where is TrustNotch hosted?</h3>
+        <div class="faq-item__a prose">
+          <p>
+            TrustNotch is built and hosted in the EU — Helsinki, Finland.
+            The live API is at <code>api.trustnotch.com</code>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bitcoin -->
+    <section class="section faq-group" aria-labelledby="btc-group">
+      <h2 id="btc-group" class="faq-group__heading">Bitcoin anchoring</h2>
+
+      <div class="faq-item" id="faq-bitcoin-why">
+        <h3 class="faq-item__q">Why use Bitcoin for timestamping?</h3>
+        <div class="faq-item__a prose">
+          <p>
+            Bitcoin's blockchain is a public, globally verifiable ledger with no single
+            controller and a well-audited history. Using
+            <a href="https://opentimestamps.org" rel="noopener noreferrer">OpenTimestamps</a>,
+            TrustNotch anchors each batch's Merkle root to a Bitcoin block — establishing
+            that the batch existed before that block was mined. Anyone can verify this
+            anchor without trusting TrustNotch or any other service.
+          </p>
+          <p>
+            Unlike centralized timestamp authorities, Bitcoin's proof-of-work makes
+            retroactive modification of the block order economically infeasible. The anchor
+            is checkable from the public blockchain, not from a certificate authority's
+            records.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item" id="faq-bitcoin-instant">
+        <h3 class="faq-item__q">Is Bitcoin anchoring instant?</h3>
+        <div class="faq-item__a prose">
+          <p>
+            No. The signed receipt is returned immediately at submission time — that is
+            your instant cryptographic commitment to the exact content logged. Bitcoin
+            anchoring is asynchronous: TrustNotch submits batch roots to OpenTimestamps
+            calendar servers, and Bitcoin confirmation accrues over the following hours
+            as blocks are mined.
+          </p>
+          <p>
+            The receipt alone proves the exact content. The Bitcoin anchor adds a
+            time-bound guarantee rooted in the blockchain. The two complement each other;
+            neither replaces the other.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item" id="faq-bitcoin-energy">
+        <h3 class="faq-item__q">Doesn't using Bitcoin have an environmental cost?</h3>
+        <div class="faq-item__a prose">
+          <p>
+            TrustNotch does not write its own Bitcoin transactions. It submits each batch's
+            Merkle root to public OpenTimestamps calendar servers, which aggregate digests
+            from many users worldwide and commit the combined root in a single periodic
+            Bitcoin transaction — so your batch shares one on-chain transaction with
+            thousands of others rather than getting its own. TrustNotch submits to
+            several calendars for redundancy; once any one of them is mined, the proof
+            upgrades to a confirmed Bitcoin anchor. The only Bitcoin calls TrustNotch makes
+            itself are read-only block lookups used to verify anchors.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Article 12 -->
+    <section class="section faq-group" aria-labelledby="reg-group">
+      <h2 id="reg-group" class="faq-group__heading">EU AI Act and compliance</h2>
+
+      <div class="faq-item" id="faq-article12">
+        <h3 class="faq-item__q">What is EU AI Act Article 12?</h3>
+        <div class="faq-item__a prose">
+          <p>
+            Article 12 of the EU AI Act requires providers and operators of high-risk AI
+            systems to ensure those systems automatically record events throughout their
+            operational lifetime — logs sufficient to reconstruct processing and establish
+            accountability. The regulation requires those logs to be tamper-evident.
+          </p>
+          <p>
+            TrustNotch provides the cryptographic foundations that tamper-evident logging
+            requires: signed receipts, Merkle-batched entries, and Bitcoin-anchored batch
+            roots that can be verified independently of TrustNotch.
+          </p>
+          <p>
+            Using TrustNotch does not itself guarantee regulatory compliance. What
+            constitutes compliance depends on your specific system, use case, and legal
+            context — always consult legal counsel for your situation.
+            <a href="/why-it-matters">Read more about the regulatory context →</a>
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item" id="faq-compliant">
+        <h3 class="faq-item__q">Does using TrustNotch make my AI system compliant?</h3>
+        <div class="faq-item__a prose">
+          <p>
+            No. TrustNotch handles the tamper-evident logging layer — the cryptographic
+            evidence that entries have not been altered. Whether that logging satisfies your
+            specific obligations under the EU AI Act or any other regulation depends on what
+            you log, how you log it, and the broader context of your system. That assessment
+            requires legal counsel, not a logging service.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Access -->
+    <section class="section faq-group" aria-labelledby="access-group">
+      <h2 id="access-group" class="faq-group__heading">Getting access</h2>
+
+      <div class="faq-item" id="faq-signup">
+        <h3 class="faq-item__q">Is there a sign-up?</h3>
+        <div class="faq-item__a prose">
+          <p>
+            Not yet. TrustNotch is currently in early access — there is no self-serve
+            signup. To request an API key and onboarding, reach out at
+            <a href="mailto:hello@trustnotch.com">hello@trustnotch.com</a>.
+            Self-serve signup will open publicly in the future.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item" id="faq-mcp">
+        <h3 class="faq-item__q">What is MCP / how does the MCP server work?</h3>
+        <div class="faq-item__a prose">
+          <p>
+            MCP (Model Context Protocol) is an open standard for connecting AI assistants
+            to external tools and services. TrustNotch's MCP server lets Claude Desktop
+            and other MCP clients submit and verify audit log entries directly — the agent
+            calls <code>submit_log</code>, receives a signed receipt, and can call
+            <code>verify_log</code> later to confirm an entry is intact.
+            <a href="/trustnotch-mcp">See the MCP server page →</a>
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item" id="faq-api">
+        <h3 class="faq-item__q">Can I use TrustNotch without the MCP server?</h3>
+        <div class="faq-item__a prose">
+          <p>
+            Yes. The REST API at <code>api.trustnotch.com</code> accepts HTTP submissions
+            directly — the MCP server is a thin wrapper that calls the same API.
+            You can submit log entries from any HTTP client and verify the resulting proofs
+            with the <code>trustnotch</code> CLI independently of the MCP layer.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Still have questions -->
+    <section class="section cta-section" aria-labelledby="contact-heading">
+      <div class="section__label">Still have questions?</div>
+      <h2 id="contact-heading" class="section__heading">Get in touch</h2>
+      <p class="section__sub">
+        Reach out and we'll get back to you — whether you have a technical question,
+        a compliance use case, or want to discuss early access.
+      </p>
+      <a href="mailto:hello@trustnotch.com" class="btn btn-primary">
+        hello@trustnotch.com →
+      </a>
+    </section>
+
+  </div>
+</Layout>
+
+<style>
+  .hero { padding-block-start: clamp(3rem, 8vw, 5rem); }
+  .hero__sub {
+    font-size: clamp(1rem, 2.5vw, 1.1875rem);
+    color: var(--color-text-secondary);
+    max-width: 58ch;
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+
+  /* FAQ group */
+  .faq-group { display: flex; flex-direction: column; gap: 0; }
+  .faq-group__heading {
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-notch-mid);
+    margin-bottom: 1rem;
+  }
+
+  /* FAQ item */
+  .faq-item {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+  .faq-item + .faq-item { margin-top: 0.75rem; }
+
+  .faq-item__q {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    padding: 1.125rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+
+  .faq-item__a {
+    padding: 1.125rem 1.5rem;
+  }
+
+  /* Prose inside FAQ */
+  .prose {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .prose p {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    max-width: 68ch;
+  }
+
+  .faq-list {
+    list-style: disc;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  .cta-section { border-bottom: none; }
+</style>

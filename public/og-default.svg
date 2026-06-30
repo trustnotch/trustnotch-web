@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#fafaf9"/>
+  <!-- border -->
+  <rect x="1" y="1" width="1198" height="628" rx="0" fill="none" stroke="#e2e0dc" stroke-width="2"/>
+  <!-- accent bar -->
+  <rect x="0" y="0" width="8" height="630" fill="#2d4a3e"/>
+  <!-- notch mark -->
+  <rect x="80" y="200" width="56" height="56" rx="6" fill="#2d4a3e"/>
+  <polygon points="80,200 136,200 124,214 80,214" fill="#e8f0ec" opacity="0.9"/>
+  <rect x="80" y="220" width="52" height="36" fill="#e8f0ec" opacity="0.9"/>
+  <!-- wordmark -->
+  <text x="154" y="242" font-family="system-ui,sans-serif" font-size="42" font-weight="700" letter-spacing="-1" fill="#1a1916">TrustNotch</text>
+  <!-- tagline -->
+  <text x="80" y="310" font-family="system-ui,sans-serif" font-size="28" fill="#5c5750">Tamper-evident audit logs for AI agents.</text>
+  <!-- sub -->
+  <text x="80" y="356" font-family="system-ui,sans-serif" font-size="20" fill="#8c877e">Ed25519 signed · Merkle-batched · Bitcoin-anchored · Verifiable offline</text>
+  <!-- footer line -->
+  <text x="80" y="560" font-family="monospace,sans-serif" font-size="16" fill="#8c877e">trustnotch.com</text>
+  <text x="1120" y="560" font-family="monospace,sans-serif" font-size="16" fill="#8c877e" text-anchor="end">Helsinki, Finland · EU</text>
+</svg>

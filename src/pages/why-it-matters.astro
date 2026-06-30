@@ -1,0 +1,259 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Why tamper-evident AI logging matters — TrustNotch"
+  description="EU AI Act Article 12 requires high-risk AI systems to keep tamper-evident logs. TrustNotch addresses this with cryptographically signed, Bitcoin-anchored, independently verifiable audit logs."
+  canonicalPath="/why-it-matters"
+>
+  <div class="page-wrapper">
+
+    <!-- Hero -->
+    <section class="section hero" aria-labelledby="wim-hero-heading">
+      <div class="section__label">Regulatory context</div>
+      <h1 id="wim-hero-heading">
+        Why tamper-evident logging matters for AI
+      </h1>
+      <p class="hero__sub">
+        Audit logs are only as credible as the evidence that they haven't been
+        altered. For AI systems operating under regulatory scrutiny, "trust us,
+        it's immutable" is not sufficient.
+      </p>
+    </section>
+
+    <!-- Article 12 -->
+    <section class="section" aria-labelledby="article12-heading">
+      <div class="section__label">EU AI Act — Article 12</div>
+      <h2 id="article12-heading" class="section__heading">The logging obligation</h2>
+      <div class="prose">
+        <p>
+          Article 12 of the EU AI Act requires providers and operators of high-risk
+          AI systems to ensure those systems automatically record events ("logs")
+          throughout their operational lifetime — logs that are sufficient to
+          reconstruct the system's processing and establish accountability after
+          the fact.
+        </p>
+        <p>
+          The regulation specifies that logging must be capable of identifying the
+          cause of malfunctions or unexpected results. Importantly, it requires
+          tamper-evidence: records that can be shown not to have been modified
+          since they were created.
+        </p>
+        <p>
+          TrustNotch is designed to address these logging requirements for AI
+          agents and the systems running them. Using TrustNotch does not itself
+          guarantee regulatory compliance — that determination depends on your
+          specific system and legal context — but it provides the cryptographic
+          foundations that tamper-evident logging requires.
+        </p>
+      </div>
+      <div class="callout mt-md">
+        <p>
+          <strong>Note on dates:</strong> The EU AI Act's application timeline for
+          high-risk AI systems is defined in the Regulation text and the Official Journal.
+          Verify specific dates against those primary sources before making compliance
+          decisions.
+        </p>
+      </div>
+    </section>
+
+    <!-- The trust problem -->
+    <section class="section" aria-labelledby="trust-heading">
+      <div class="section__label">The problem</div>
+      <h2 id="trust-heading" class="section__heading">Why "trust us" logging isn't enough</h2>
+      <div class="prose">
+        <p>
+          Most audit-log services store your records in a database they control.
+          If a record needs to be shown unmodified, you must trust their assertion
+          that nothing has changed — because no independent check exists.
+        </p>
+        <p>
+          In a regulatory audit or legal proceeding, this is a structural weakness.
+          An auditor can ask for evidence that logs have not been tampered with after
+          the fact — and "we say they haven't" is not evidence.
+        </p>
+        <p>
+          The same problem applies to AI systems themselves: an agent that can log
+          its own actions to a store it influences has a credibility gap. Logs
+          submitted to a service that returns signed, externally anchored receipts
+          are harder to deny or revise.
+        </p>
+      </div>
+    </section>
+
+    <!-- How TrustNotch addresses it -->
+    <section class="section" aria-labelledby="approach-heading">
+      <div class="section__label">TrustNotch's approach</div>
+      <h2 id="approach-heading" class="section__heading">Cryptographic evidence, not assertions</h2>
+      <ol class="steps" role="list">
+        <li class="step">
+          <div class="step__number" aria-hidden="true">01</div>
+          <div class="step__body">
+            <h3 class="step__title">Signed receipt at submission</h3>
+            <p class="step__desc">
+              Every entry gets an Ed25519-signed receipt immediately — a cryptographic
+              commitment to the exact content submitted. If the content changes later,
+              the receipt no longer verifies.
+            </p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step__number" aria-hidden="true">02</div>
+          <div class="step__body">
+            <h3 class="step__title">Bitcoin-anchored batch root</h3>
+            <p class="step__desc">
+              Entries are batched into an RFC&nbsp;6962 Merkle tree and each batch root
+              is anchored to Bitcoin via OpenTimestamps — a public, globally verifiable
+              ledger with no single controller. This binds the batch in time without
+              relying on TrustNotch's own clock or any centralized timestamping authority.
+              Anchoring is asynchronous: Bitcoin confirmation accrues over hours, not seconds.
+            </p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step__number" aria-hidden="true">03</div>
+          <div class="step__body">
+            <h3 class="step__title">Verifiable offline, independently</h3>
+            <p class="step__desc">
+              Any entry can be verified with the open-source
+              <a href="/how-verification-works"><code>trustnotch</code> verifier</a>
+              — no API call, no account, no TrustNotch server. The proof is
+              self-contained and checkable by anyone, including an auditor using
+              their own tools. A proof keeps verifying even if TrustNotch disappears.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- GDPR -->
+    <section class="section" aria-labelledby="gdpr-heading">
+      <div class="section__label">GDPR</div>
+      <h2 id="gdpr-heading" class="section__heading">Per-entry erasure without breaking proofs</h2>
+      <div class="prose">
+        <p>
+          Tamper-evident logging and GDPR's right to erasure can seem at odds: if a log
+          entry is cryptographically sealed, how can personal data be erased?
+        </p>
+        <p>
+          TrustNotch resolves this with per-entry erasure. You can erase the stored
+          payload for any entry — removing it from TrustNotch's servers — while every
+          proof for that entry and every sibling entry continues to verify. The Merkle
+          tree is constructed over the hashes of content, not the content itself, so
+          removing a payload doesn't invalidate any sibling's inclusion path.
+        </p>
+        <p>
+          This means you can satisfy a GDPR erasure request for a specific user's data
+          without retroactively undermining the integrity of surrounding log entries.
+        </p>
+      </div>
+    </section>
+
+    <!-- MCP angle -->
+    <section class="section" aria-labelledby="mcp-angle-heading">
+      <div class="section__label">MCP-first</div>
+      <h2 id="mcp-angle-heading" class="section__heading">Logging built into the agent's context</h2>
+      <div class="prose">
+        <p>
+          TrustNotch's MCP server lets AI agents log their own actions directly —
+          through the same Model Context Protocol interface they use for everything else.
+          The agent calls <code>submit_log</code>, gets back a signed receipt, and can
+          later call <code>verify_log</code> to confirm an entry is intact. The whole
+          logging loop is in the agent's context, not a separate integration.
+        </p>
+        <p>
+          Because verification is independent of TrustNotch, an agent's logs can be
+          audited by anyone — the operator, a regulator, or a third-party auditor —
+          using the open-source verifier, without any involvement from TrustNotch.
+        </p>
+      </div>
+      <div class="cta-row">
+        <a href="/trustnotch-mcp" class="btn btn-secondary">MCP Server →</a>
+        <a href="/how-verification-works" class="btn btn-secondary">How verification works →</a>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section cta-section" aria-labelledby="cta-heading">
+      <div class="section__label">Early access</div>
+      <h2 id="cta-heading" class="section__heading">Get an API key</h2>
+      <p class="section__sub">
+        TrustNotch is in early access — there is no self-serve signup yet.
+        Reach out to discuss your use case and get onboarded.
+      </p>
+      <a href="mailto:hello@trustnotch.com" class="btn btn-primary">
+        Contact us →
+      </a>
+    </section>
+
+  </div>
+</Layout>
+
+<style>
+  .hero { padding-block-start: clamp(3rem, 8vw, 5rem); }
+  .hero__sub {
+    font-size: clamp(1rem, 2.5vw, 1.1875rem);
+    color: var(--color-text-secondary);
+    max-width: 58ch;
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+
+  .prose {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .prose p {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    max-width: 68ch;
+  }
+
+  .mt-md { margin-top: 1rem; }
+
+  /* Steps — same pattern as home page */
+  .steps {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .step {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem 1.75rem;
+    background: var(--color-surface);
+  }
+  .step + .step { border-top: 1px solid var(--color-border); }
+  .step__number {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-notch-mid);
+    letter-spacing: 0.05em;
+    font-weight: 500;
+    padding-top: 0.15rem;
+    min-width: 2rem;
+    flex-shrink: 0;
+  }
+  .step__title { margin-bottom: 0.4rem; font-size: 1rem; }
+  .step__desc {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    max-width: 60ch;
+  }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .cta-section { border-bottom: none; }
+</style>

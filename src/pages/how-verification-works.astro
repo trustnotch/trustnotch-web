@@ -1,0 +1,323 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="How verification works — TrustNotch"
+  description="The technical details behind TrustNotch's offline verifier: Ed25519 receipt, RFC 6962 Merkle inclusion, and Bitcoin anchor — all checked locally, independent of TrustNotch."
+  canonicalPath="/how-verification-works"
+>
+  <div class="page-wrapper">
+
+    <!-- Hero -->
+    <section class="section hero" aria-labelledby="verify-hero-heading">
+      <div class="section__label">Verifier independence</div>
+      <h1 id="verify-hero-heading">How verification works</h1>
+      <p class="hero__sub">
+        Every TrustNotch proof is self-contained. Verification runs entirely on your
+        machine — no API call, no account, no TrustNotch server.
+        Here is exactly what the verifier checks and why each step matters.
+      </p>
+    </section>
+
+    <!-- What a proof contains -->
+    <section class="section" aria-labelledby="proof-heading">
+      <div class="section__label">Proof structure</div>
+      <h2 id="proof-heading" class="section__heading">What a proof bundle contains</h2>
+      <p class="section__sub">
+        Once an entry's batch is anchored, TrustNotch can produce a proof bundle:
+        a single document with everything needed to verify the entry offline.
+      </p>
+      <div class="proof-parts">
+        <div class="proof-part">
+          <div class="proof-part__label">Receipt</div>
+          <p class="proof-part__desc">
+            An Ed25519 signature over the entry's RFC&nbsp;6962 leaf hash, issued at
+            submission time. Proves the exact content that was accepted.
+          </p>
+        </div>
+        <div class="proof-part">
+          <div class="proof-part__label">Merkle path</div>
+          <p class="proof-part__desc">
+            The sibling hashes needed to recompute every node from this leaf up to the
+            batch's Merkle root, per RFC&nbsp;6962.
+          </p>
+        </div>
+        <div class="proof-part">
+          <div class="proof-part__label">Bitcoin anchor</div>
+          <p class="proof-part__desc">
+            An OpenTimestamps proof that chains the batch root to a Bitcoin block header
+            hash — establishing that the batch existed before that block was mined.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step-by-step -->
+    <section class="section" aria-labelledby="steps-heading">
+      <div class="section__label">Step by step</div>
+      <h2 id="steps-heading" class="section__heading">Three checks, all local</h2>
+      <ol class="steps" role="list">
+        <li class="step">
+          <div class="step__number" aria-hidden="true">01</div>
+          <div class="step__body">
+            <h3 class="step__title">Verify the receipt</h3>
+            <p class="step__desc">
+              The verifier computes the RFC&nbsp;6962 leaf hash of the submitted content
+              — <code>SHA-256(0x00 || entry)</code> — and checks the Ed25519 signature
+              in the receipt against TrustNotch's public key.
+              If the entry's content was changed after submission, the signature check fails.
+            </p>
+            <p class="step__desc step__desc--note">
+              Public keys are fetched once from the public <code>/v1/keys</code> directory,
+              or loaded from a local file via <code>TRUSTNOTCH_PUBKEYS_PATH</code>.
+              After that initial fetch, no further server contact is needed.
+            </p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step__number" aria-hidden="true">02</div>
+          <div class="step__body">
+            <h3 class="step__title">Verify Merkle inclusion</h3>
+            <p class="step__desc">
+              Using the sibling hashes in the Merkle path, the verifier recomputes each
+              interior node up to the batch root, following the RFC&nbsp;6962 construction:
+              interior nodes are <code>SHA-256(0x01 || left || right)</code>.
+              The computed root must match the root committed in both the receipt and the
+              OpenTimestamps proof.
+            </p>
+            <p class="step__desc step__desc--note">
+              This step proves the entry is in the specific batch, not merely that the batch
+              root is anchored somewhere. An entry that was not included cannot produce a
+              valid Merkle path to the committed root.
+            </p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step__number" aria-hidden="true">03</div>
+          <div class="step__body">
+            <h3 class="step__title">Verify the Bitcoin anchor</h3>
+            <p class="step__desc">
+              The OpenTimestamps proof encodes a hash chain from the batch root to a
+              Bitcoin block header hash. The verifier checks this chain structurally —
+              confirming each hashing operation in the chain is correct. A valid chain
+              establishes that the batch root was committed before the referenced Bitcoin
+              block was mined.
+            </p>
+            <p class="step__desc step__desc--note">
+              Bitcoin anchoring is asynchronous: the signed receipt is returned at
+              submission time, and the Bitcoin anchor accrues over the following hours
+              as the OpenTimestamps calendars aggregate and a block is mined.
+              The receipt alone proves the exact content; the Bitcoin anchor bounds
+              it in time.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- What this means -->
+    <section class="section" aria-labelledby="meaning-heading">
+      <div class="section__label">Why it matters</div>
+      <h2 id="meaning-heading" class="section__heading">The guarantee that holds without us</h2>
+      <div class="prose">
+        <p>
+          All three checks run locally. The math does not involve TrustNotch — once a
+          proof is in your hands, it is yours. A proof that verifies today will verify
+          in ten years, even if TrustNotch has shut down.
+        </p>
+        <p>
+          This is deliberately different from "trust our immutability claims." A signed
+          receipt from a vendor that controls its own database is an assertion;
+          a proof that recomputes against Bitcoin's public ledger is independently
+          checkable evidence. The distinction matters in a compliance audit or legal
+          proceeding where "we say it's immutable" is not acceptable.
+        </p>
+        <p>
+          Because the verifier is open source, anyone can read what it does. There is no
+          black box — the verification logic is the same whether you run the
+          <code>trustnotch</code> CLI, the <code>verify_proof</code> MCP tool, or
+          implement the three checks yourself from the RFC&nbsp;6962 and OpenTimestamps specs.
+        </p>
+      </div>
+    </section>
+
+    <!-- Install / try it -->
+    <section class="section" aria-labelledby="install-heading">
+      <div class="section__label">Try it yourself</div>
+      <h2 id="install-heading" class="section__heading">Install the standalone verifier</h2>
+      <p class="section__sub">
+        The <code>trustnotch</code> verifier is open source, published to PyPI with
+        provenance attestation, and has no runtime dependency on TrustNotch.
+      </p>
+      <div class="code-block">
+        <pre><code># Install
+pip install trustnotch
+
+# Verify a proof bundle offline
+trustnotch verify proof.json</code></pre>
+      </div>
+      <div class="callout mt-md">
+        <p>
+          Source mirror: <a href="https://github.com/trustnotch/trustnotch" rel="noopener noreferrer">github.com/trustnotch/trustnotch</a>.
+          &ensp;PyPI: <a href="https://pypi.org/project/trustnotch/" rel="noopener noreferrer">pypi.org/project/trustnotch</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- Related -->
+    <section class="section related-section" aria-labelledby="related-heading">
+      <div class="section__label" id="related-heading">Related</div>
+      <div class="links-grid">
+        <a href="/trustnotch-mcp" class="link-card">
+          <span class="link-card__title">MCP Server →</span>
+          <span class="link-card__desc">Use TrustNotch from Claude Desktop and other MCP clients, including the <code>verify_proof</code> tool.</span>
+        </a>
+        <a href="/why-it-matters" class="link-card">
+          <span class="link-card__title">Why it matters →</span>
+          <span class="link-card__desc">The regulatory case: EU AI Act Article 12 and why "trust us" logging is not enough.</span>
+        </a>
+        <a href="/faq" class="link-card">
+          <span class="link-card__title">FAQ →</span>
+          <span class="link-card__desc">Common questions about trust, GDPR erasure, Bitcoin anchoring, and access.</span>
+        </a>
+      </div>
+    </section>
+
+  </div>
+</Layout>
+
+<style>
+  .hero { padding-block-start: clamp(3rem, 8vw, 5rem); }
+  .hero__sub {
+    font-size: clamp(1rem, 2.5vw, 1.1875rem);
+    color: var(--color-text-secondary);
+    max-width: 58ch;
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+
+  /* Proof parts */
+  .proof-parts {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-top: 0.5rem;
+  }
+  .proof-part {
+    padding: 1.25rem 1.5rem;
+    background: var(--color-surface);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .proof-part + .proof-part { border-top: 1px solid var(--color-border); }
+  .proof-part__label {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-notch-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .proof-part__desc {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    max-width: 65ch;
+  }
+
+  /* Steps */
+  .steps {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .step {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem 1.75rem;
+    background: var(--color-surface);
+  }
+  .step + .step { border-top: 1px solid var(--color-border); }
+  .step__number {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-notch-mid);
+    letter-spacing: 0.05em;
+    font-weight: 500;
+    padding-top: 0.15rem;
+    min-width: 2rem;
+    flex-shrink: 0;
+  }
+  .step__title { margin-bottom: 0.5rem; font-size: 1rem; }
+  .step__body { display: flex; flex-direction: column; gap: 0.75rem; }
+  .step__desc {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    max-width: 62ch;
+  }
+  .step__desc--note {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+  }
+
+  /* Prose */
+  .prose {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .prose p {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    max-width: 70ch;
+  }
+
+  .mt-md { margin-top: 1rem; }
+
+  /* Related links grid — matches home page pattern */
+  .related-section { border-bottom: none; }
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--color-border);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-top: 0.75rem;
+  }
+  .link-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--color-surface);
+    text-decoration: none;
+    transition: background 0.12s;
+  }
+  .link-card:hover { background: var(--color-surface-alt); }
+  .link-card:focus-visible {
+    outline: 2px solid var(--color-notch);
+    outline-offset: -2px;
+  }
+  .link-card__title {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--color-text);
+    font-family: var(--font-mono);
+  }
+  .link-card__desc {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+</style>

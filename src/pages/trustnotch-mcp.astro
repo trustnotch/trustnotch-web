@@ -1,0 +1,284 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="trustnotch-mcp — TrustNotch MCP Server"
+  description="A local MCP server that gives AI agents tamper-evident, independently verifiable audit logs over the Model Context Protocol. Install with uvx trustnotch-mcp."
+  ogImage="/og-mcp.png"
+  canonicalPath="/trustnotch-mcp"
+>
+  <div class="page-wrapper">
+
+    <!-- Hero -->
+    <section class="section hero" aria-labelledby="mcp-hero-heading">
+      <div class="section__label">Model Context Protocol</div>
+      <h1 id="mcp-hero-heading">TrustNotch MCP server</h1>
+      <p class="hero__sub">
+        Give your AI agents tamper-evident, independently verifiable audit logs —
+        over the Model Context Protocol.
+      </p>
+      <div class="hero__meta">
+        <span class="badge"><code>trustnotch-mcp</code></span>
+        <span class="badge-sep" aria-hidden="true">·</span>
+        <a href="https://pypi.org/project/trustnotch-mcp/" class="badge-link" rel="noopener noreferrer">PyPI ↗</a>
+        <span class="badge-sep" aria-hidden="true">·</span>
+        <span class="badge-plain">Python &bull; Apache-2.0</span>
+      </div>
+    </section>
+
+    <!-- What it is -->
+    <section class="section" aria-labelledby="what-heading">
+      <div class="section__label">What it is</div>
+      <h2 id="what-heading" class="section__heading">A thin local server, never in the trust path</h2>
+      <p class="section__sub">
+        <code>trustnotch-mcp</code> is a lightweight, local MCP server that lets an MCP client
+        (such as Claude Desktop) submit agent actions to TrustNotch and verify them.
+        It calls the TrustNotch API at <code>api.trustnotch.com</code> and runs all
+        cryptographic verification <strong>locally on your machine</strong> — the server
+        is never in the trust path. You can audit every proof yourself.
+      </p>
+    </section>
+
+    <!-- Install / run -->
+    <section class="section" aria-labelledby="install-heading">
+      <div class="section__label">Install &amp; run</div>
+      <h2 id="install-heading" class="section__heading">Get running in seconds</h2>
+
+      <h3 class="subsection-title">Quickest: run with uvx</h3>
+      <p class="body-text">
+        No install step needed. Requires <a href="https://docs.astral.sh/uv/" rel="noopener noreferrer"><code>uv</code></a>
+        — the fast Python package manager.
+      </p>
+      <div class="code-block mt-sm">
+        <pre><code>uvx trustnotch-mcp</code></pre>
+      </div>
+
+      <h3 class="subsection-title mt-lg">Claude Desktop config</h3>
+      <p class="body-text">
+        Add the following to your Claude Desktop <code>claude_desktop_config.json</code>:
+      </p>
+      <div class="code-block mt-sm">
+        <pre><code>{`{
+  "mcpServers": {
+    "trustnotch": {
+      "command": "uvx",
+      "args": ["trustnotch-mcp"],
+      "env": {
+        "TRUSTNOTCH_API_KEY": "tn_live_xxx",
+        "TRUSTNOTCH_API_URL": "https://api.trustnotch.com"
+      }
+    }
+  }
+}`}</code></pre>
+      </div>
+
+      <div class="callout mt-sm">
+        <p>
+          <strong>Windows note:</strong> if the Claude Desktop app doesn't inherit your shell
+          <code>PATH</code>, set <code>"command"</code> to the full path to <code>uvx.exe</code>
+          (e.g. <code>C:\Users\you\.local\bin\uvx.exe</code>).
+        </p>
+      </div>
+    </section>
+
+    <!-- Tools table -->
+    <section class="section" aria-labelledby="tools-heading">
+      <div class="section__label">MCP Tools</div>
+      <h2 id="tools-heading" class="section__heading">Five tools exposed to your agent</h2>
+      <div class="table-wrapper" role="region" aria-label="MCP tools reference">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">Tool</th>
+              <th scope="col">What it does</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>submit_log</code></td>
+              <td>Record an agent action; returns an Ed25519-signed receipt.</td>
+            </tr>
+            <tr>
+              <td><code>get_log</code></td>
+              <td>Fetch a previously submitted entry.</td>
+            </tr>
+            <tr>
+              <td><code>get_proof</code></td>
+              <td>Fetch the full proof bundle (receipt + Merkle inclusion + Bitcoin anchor) for an entry.</td>
+            </tr>
+            <tr>
+              <td><code>verify_proof</code></td>
+              <td>Verify a proof bundle <strong>locally</strong> (receipt + Merkle inclusion + anchor-structural) — no trust in the server.</td>
+            </tr>
+            <tr>
+              <td><code>verify_log</code></td>
+              <td>Fetch and verify an entry in one call.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Configuration -->
+    <section class="section" aria-labelledby="config-heading">
+      <div class="section__label">Configuration</div>
+      <h2 id="config-heading" class="section__heading">Environment variables</h2>
+      <div class="table-wrapper" role="region" aria-label="Environment variable reference">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">Variable</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>TRUSTNOTCH_API_KEY</code></td>
+              <td><strong>Required.</strong> Your API key. The server fail-fasts on startup without it.</td>
+            </tr>
+            <tr>
+              <td><code>TRUSTNOTCH_API_URL</code></td>
+              <td>Optional. Default: <code>https://api.trustnotch.com</code>.</td>
+            </tr>
+            <tr>
+              <td><code>TRUSTNOTCH_PUBKEYS_PATH</code></td>
+              <td>
+                Optional. Path to a local trusted-key file. When set, verification reports
+                <code>trusted_keys_source: local</code>. Otherwise, keys are fetched from the
+                public <code>/v1/keys</code> directory.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Independence story -->
+    <section class="section" aria-labelledby="verify-heading">
+      <div class="section__label">Verifier independence</div>
+      <h2 id="verify-heading" class="section__heading">Why "verifiable offline" actually matters</h2>
+      <div class="prose">
+        <p>
+          Most audit-log services ask you to trust them. TrustNotch does not. Every proof
+          is self-contained and checkable with the open-source
+          <a href="https://pypi.org/project/trustnotch/" rel="noopener noreferrer"><code>trustnotch</code></a>
+          verifier — no API call, no account, no TrustNotch server.
+        </p>
+        <p>
+          Verification works like this: the receipt is an Ed25519 signature over the
+          RFC&nbsp;6962 leaf hash of your entry. Merkle inclusion is recomputed against the
+          batch root. The Bitcoin anchor is checked structurally against the
+          OpenTimestamps proof. All three steps run locally.
+        </p>
+        <p>
+          Because the math doesn't involve TrustNotch, a proof that verifies today will
+          verify in ten years — even if TrustNotch has shut down. That's the guarantee
+          that matters for AI Act Article&nbsp;12 logging, compliance audits, and any context
+          where "trust us, it's immutable" is not good enough.
+        </p>
+      </div>
+      <div class="code-block mt-lg">
+        <pre><code># Install the standalone verifier
+pip install trustnotch
+
+# Verify any proof bundle offline
+trustnotch verify proof.json</code></pre>
+      </div>
+      <p class="verify-deepdive">
+        <a href="/how-verification-works">How verification works in detail →</a>
+      </p>
+    </section>
+
+    <!-- Access / CTA -->
+    <section class="section cta-section" aria-labelledby="access-heading">
+      <div class="section__label">Early access</div>
+      <h2 id="access-heading" class="section__heading">Request access</h2>
+      <p class="body-text">
+        There is no self-serve signup yet. TrustNotch is in early access — reach out
+        to get an API key and onboarding.
+      </p>
+      <div class="cta-actions">
+        <a href="mailto:hello@trustnotch.com" class="btn btn-primary">
+          Contact us →
+        </a>
+        <a href="https://pypi.org/project/trustnotch-mcp/" class="btn btn-secondary" rel="noopener noreferrer">
+          PyPI: trustnotch-mcp ↗
+        </a>
+        <a href="https://pypi.org/project/trustnotch/" class="btn btn-secondary" rel="noopener noreferrer">
+          PyPI: trustnotch ↗
+        </a>
+      </div>
+    </section>
+
+  </div>
+</Layout>
+
+<style>
+  .hero { padding-block-start: clamp(3rem, 8vw, 5rem); }
+  .hero__sub {
+    font-size: clamp(1rem, 2.5vw, 1.1875rem);
+    color: var(--color-text-secondary);
+    max-width: 58ch;
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+  .hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    font-size: 0.875rem;
+  }
+  .badge {
+    background: var(--color-mono-bg);
+    border: 1px solid var(--color-mono-border);
+    border-radius: var(--radius);
+    padding: 0.2rem 0.6rem;
+    font-size: 0.8125rem;
+  }
+  .badge-sep { color: var(--color-text-muted); }
+  .badge-link { font-size: 0.875rem; }
+  .badge-plain { color: var(--color-text-muted); font-size: 0.875rem; }
+
+  .subsection-title {
+    font-size: 1rem;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .body-text {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    max-width: 65ch;
+  }
+
+  .mt-sm { margin-top: 0.75rem; }
+  .mt-lg { margin-top: 1.75rem; }
+
+  .prose {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .prose p {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    max-width: 70ch;
+  }
+
+  .cta-section { border-bottom: none; }
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .verify-deepdive {
+    margin-top: 1.25rem;
+    font-size: 0.9375rem;
+  }
+</style>

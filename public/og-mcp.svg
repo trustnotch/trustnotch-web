@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#fafaf9"/>
+  <rect x="1" y="1" width="1198" height="628" rx="0" fill="none" stroke="#e2e0dc" stroke-width="2"/>
+  <rect x="0" y="0" width="8" height="630" fill="#2d4a3e"/>
+  <!-- notch mark -->
+  <rect x="80" y="180" width="56" height="56" rx="6" fill="#2d4a3e"/>
+  <polygon points="80,180 136,180 124,194 80,194" fill="#e8f0ec" opacity="0.9"/>
+  <rect x="80" y="200" width="52" height="36" fill="#e8f0ec" opacity="0.9"/>
+  <text x="154" y="222" font-family="system-ui,sans-serif" font-size="42" font-weight="700" letter-spacing="-1" fill="#1a1916">TrustNotch</text>
+  <text x="80" y="290" font-family="system-ui,sans-serif" font-size="34" font-weight="600" letter-spacing="-0.5" fill="#1a1916">MCP Server</text>
+  <text x="80" y="345" font-family="system-ui,sans-serif" font-size="22" fill="#5c5750">Tamper-evident audit logs over the Model Context Protocol.</text>
+  <text x="80" y="390" font-family="system-ui,sans-serif" font-size="18" fill="#8c877e">Independently verifiable · locally executed · never in the trust path</text>
+  <text x="80" y="560" font-family="monospace,sans-serif" font-size="16" fill="#8c877e">trustnotch.com/trustnotch-mcp</text>
+  <text x="1120" y="560" font-family="monospace,sans-serif" font-size="16" fill="#8c877e" text-anchor="end">pip install trustnotch-mcp</text>
+</svg>
