@@ -12,7 +12,12 @@ Running task list for the public marketing site. Product/server work lives in th
 - Match existing design tokens; no new deps; don't rearchitect.
 
 ## In progress
-_(none)_
+- [ ] MCP page + all-page header/nav/footer consistency via the shared layout.
+      (Deferred from the polish PR — to be done in the privacy-page branch, which already edits Layout.astro.)
+— Extended site to five pages: added `/faq`, `/how-verification-works`,
+      `/why-it-matters` + nav (How it works · Why it matters · MCP Server · FAQ) + cross-links.
+      FAQ key-rotation and Bitcoin-footprint answers vetted against the architecture before publish.
+      Repo reseeded clean (source-only `origin/main`).
 
 ## Backlog
 - [ ] Contact address: site uses `hello@trustnotch.com` everywhere; the dashboard's enterprise CTA
@@ -27,10 +32,6 @@ _(none)_
       call, likely timed with signup go-live. Not before.
 
 ## Done
-- [x] 2026-06-30 — Extended site to five pages: added `/faq`, `/how-verification-works`,
-      `/why-it-matters` + nav (How it works · Why it matters · MCP Server · FAQ) + cross-links.
-      FAQ key-rotation and Bitcoin-footprint answers vetted against the architecture before publish.
-      Repo reseeded clean (source-only `origin/main`).
 - [x] 2026-06-30 — Polish pass: fixed home "Get started" grid (4 cards → clean 2×2, no empty grey
       cells; `repeat(2,1fr)` + mobile 1-col breakpoint). Fixed `how-verification-works` related
       grid (`auto-fill` → `auto-fit`). Audited all 5 pages — shared Layout nav/header/footer
