@@ -1,0 +1,435 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const SIGNUP_URL = 'https://app.trustnotch.com/signup';
+---
+
+<Layout
+  title="Pricing &mdash; TrustNotch"
+  description="Tamper-evident audit logs for AI agents. Free up to 10,000 entries per month. Pro at 49 EUR, Business at 249 EUR. Transparent metered overage with a hard cap."
+  canonicalPath="/pricing"
+>
+  <div class="page-wrapper">
+
+    <!-- Hero -->
+    <section class="section hero" aria-labelledby="pricing-hero-heading">
+      <div class="section__label">Pricing</div>
+      <h1 id="pricing-hero-heading">Priced per log entry, capped by design</h1>
+      <p class="hero__sub">
+        Every plan includes the full cryptographic pipeline &mdash; signed receipts,
+        Merkle batching, Bitcoin anchoring, and offline verification. The plan only
+        changes how many entries you write each month.
+      </p>
+      <div class="hero__actions">
+        <a href={SIGNUP_URL} class="btn btn-primary">Start free &rarr;</a>
+        <a href="/how-verification-works" class="btn btn-secondary">How verification works</a>
+      </div>
+    </section>
+
+    <!-- Plans -->
+    <section class="section" aria-labelledby="plans-heading">
+      <div class="section__label">Plans</div>
+      <h2 id="plans-heading" class="section__heading">Choose an included volume</h2>
+
+      <div class="plan-grid">
+
+        <article class="plan">
+          <div class="plan__name">Free</div>
+          <div class="plan__price">
+            <span class="plan__amount">&euro;0</span>
+          </div>
+          <div class="plan__volume">10,000 entries per month</div>
+          <ul class="plan__features">
+            <li>The complete cryptographic pipeline &mdash; nothing is held back</li>
+            <li>Writes stop when you reach 10,000; nothing is billed</li>
+            <li>Agents can provision their own free-tier account over the API, no browser required</li>
+          </ul>
+          <a href={SIGNUP_URL} class="btn btn-secondary plan__cta">Start free</a>
+        </article>
+
+        <article class="plan plan--featured">
+          <div class="plan__badge">Most common</div>
+          <div class="plan__name">Pro</div>
+          <div class="plan__price">
+            <span class="plan__amount">&euro;49</span><span class="plan__period">/ month</span>
+          </div>
+          <div class="plan__volume">100,000 entries per month</div>
+          <ul class="plan__features">
+            <li>Everything in Free</li>
+            <li>Optional metered overage at &euro;0.0005 per entry</li>
+            <li>Hard cap at 500,000 entries &mdash; a stop, not a surcharge</li>
+          </ul>
+          <a href={SIGNUP_URL} class="btn btn-primary plan__cta">Get started</a>
+        </article>
+
+        <article class="plan">
+          <div class="plan__name">Business</div>
+          <div class="plan__price">
+            <span class="plan__amount">&euro;249</span><span class="plan__period">/ month</span>
+          </div>
+          <div class="plan__volume">1,000,000 entries per month</div>
+          <ul class="plan__features">
+            <li>Everything in Pro</li>
+            <li>Optional metered overage at &euro;0.0005 per entry</li>
+            <li>Hard cap at 5,000,000 entries</li>
+          </ul>
+          <a href={SIGNUP_URL} class="btn btn-secondary plan__cta">Get started</a>
+        </article>
+
+        <article class="plan">
+          <div class="plan__name">Enterprise</div>
+          <div class="plan__price">
+            <span class="plan__amount plan__amount--text">Let's talk</span>
+          </div>
+          <div class="plan__volume">Unlimited included volume</div>
+          <ul class="plan__features">
+            <li>Everything in Business</li>
+            <li>Volume and terms agreed with you, not read off a page</li>
+            <li>Custom included volume set per account</li>
+          </ul>
+          <a href="mailto:hello@trustnotch.com" class="btn btn-secondary plan__cta">Contact us &rarr;</a>
+        </article>
+
+      </div>
+
+      <div class="plan-notes">
+        <p>
+          Prices are in EUR. The amount shown is the amount charged &mdash; no VAT or
+          other tax is added at checkout.
+        </p>
+        <p>
+          Billing runs on calendar months. Your first charge is prorated from signup to
+          the 1st of the next month; the full monthly price starts then.
+        </p>
+      </div>
+    </section>
+
+    <!-- Overage -->
+    <section class="section" aria-labelledby="overage-heading">
+      <div class="section__label">Beyond the included volume</div>
+      <h2 id="overage-heading" class="section__heading">Overage is off until you turn it on</h2>
+      <p class="section__sub">
+        An audit log that silently bills you for a runaway agent is not a feature. Overage
+        is opt-in per account and capped in every case.
+      </p>
+
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">Plan</th>
+              <th scope="col">Included</th>
+              <th scope="col">Overage</th>
+              <th scope="col">Hard cap</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Free</td>
+              <td>10,000</td>
+              <td>Not available</td>
+              <td>10,000</td>
+            </tr>
+            <tr>
+              <td>Pro</td>
+              <td>100,000</td>
+              <td>&euro;0.0005 / entry</td>
+              <td>500,000 (5&times;)</td>
+            </tr>
+            <tr>
+              <td>Business</td>
+              <td>1,000,000</td>
+              <td>&euro;0.0005 / entry</td>
+              <td>5,000,000 (5&times;)</td>
+            </tr>
+            <tr>
+              <td>Enterprise</td>
+              <td>Unlimited</td>
+              <td>Agreed with you</td>
+              <td>Agreed with you</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <p>
+          Overage is disabled by default on every plan. You enable it yourself from your
+          dashboard; until you do, writes stop at your included volume rather than
+          continuing at a cost. Overage is metered by TrustNotch and billed in arrears at
+          the end of the month, and the hard cap is a genuine stop &mdash; writes are
+          refused past it, they are not billed at a higher rate. We email you at 80% and
+          100% of your included volume, and again as you approach the cap.
+        </p>
+      </div>
+    </section>
+
+    <!-- In every plan -->
+    <section class="section" aria-labelledby="included-heading">
+      <div class="section__label">In every plan</div>
+      <h2 id="included-heading" class="section__heading">The proof pipeline is not a paid tier</h2>
+      <p class="section__sub">
+        A cheaper plan does not get weaker evidence. Free and Enterprise entries are
+        cryptographically identical.
+      </p>
+
+      <ul class="feature-list">
+        <li>
+          <span class="feature-list__title">Ed25519-signed receipt for every entry</span>
+          <span class="feature-list__desc">Returned on write, over the RFC 6962 leaf hash.</span>
+        </li>
+        <li>
+          <span class="feature-list__title">RFC 6962 Merkle tree batching</span>
+          <span class="feature-list__desc">The same append-only structure used by Certificate Transparency.</span>
+        </li>
+        <li>
+          <span class="feature-list__title">Batch roots anchored to Bitcoin</span>
+          <span class="feature-list__desc">Via OpenTimestamps, which aggregates many roots into a single on-chain commitment &mdash; there is no Bitcoin transaction per entry, and none is needed.</span>
+        </li>
+        <li>
+          <span class="feature-list__title">Independent open-source verifier</span>
+          <span class="feature-list__desc">Anyone can check your logs with the published <code>trustnotch</code> package, offline, with no TrustNotch server involved.</span>
+        </li>
+        <li>
+          <span class="feature-list__title">MCP server</span>
+          <span class="feature-list__desc">Agents log and verify through the Model Context Protocol.</span>
+        </li>
+        <li>
+          <span class="feature-list__title">Built and hosted in the EU</span>
+          <span class="feature-list__desc">Aimed at EU AI Act Article 12 record-keeping for high-risk AI systems.</span>
+        </li>
+      </ul>
+
+      <div class="cta-row">
+        <a href="/how-verification-works" class="btn btn-secondary">How verification works &rarr;</a>
+        <a href="/why-it-matters" class="btn btn-secondary">Why it matters &rarr;</a>
+      </div>
+    </section>
+
+    <!-- Questions -->
+    <section class="section" aria-labelledby="questions-heading">
+      <div class="section__label">Before you sign up</div>
+      <h2 id="questions-heading" class="section__heading">Two things worth knowing</h2>
+      <div class="prose">
+        <p>
+          <strong>Changing plans.</strong> You can move between plans or cancel at any time
+          from your dashboard. Cancelling takes effect at the end of the billing period you
+          have already paid for, so your logging is never cut off mid-month.
+        </p>
+        <p>
+          <strong>What an entry is.</strong> One entry is one logged action. You send the
+          action and its metadata; TrustNotch returns a signed receipt and includes the
+          entry in the next batch.
+        </p>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section cta-section" aria-labelledby="pricing-cta-heading">
+      <div class="section__label">Get started</div>
+      <h2 id="pricing-cta-heading" class="section__heading">Start on the free tier</h2>
+      <p class="section__sub">
+        10,000 entries a month, the full proof pipeline, no card required. Move up when
+        your volume does.
+      </p>
+      <div class="cta-row">
+        <a href={SIGNUP_URL} class="btn btn-primary">Create an account &rarr;</a>
+        <a href="mailto:hello@trustnotch.com" class="btn btn-secondary">Ask a question</a>
+      </div>
+    </section>
+
+  </div>
+</Layout>
+
+<style>
+  .hero { padding-block-start: clamp(3rem, 8vw, 5rem); }
+  .hero__sub {
+    font-size: clamp(1rem, 2.5vw, 1.1875rem);
+    color: var(--color-text-secondary);
+    max-width: 58ch;
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+
+  /* Plan grid */
+  .plan-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1.75rem;
+  }
+  @media (max-width: 640px) {
+    .plan-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  .plan {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem 1.5rem 1.5rem;
+  }
+  .plan--featured {
+    border-color: var(--color-notch);
+    box-shadow: 0 0 0 1px var(--color-notch);
+  }
+  .plan__badge {
+    position: absolute;
+    top: -0.6rem;
+    left: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-notch-light);
+    background: var(--color-notch);
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+  }
+  .plan__name {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-notch-mid);
+    font-weight: 500;
+  }
+  .plan__price {
+    margin-top: 0.6rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+  }
+  .plan__amount {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+    line-height: 1.1;
+  }
+  .plan__amount--text {
+    font-size: clamp(1.375rem, 3vw, 1.625rem);
+  }
+  .plan__period {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+  }
+  .plan__volume {
+    margin-top: 0.4rem;
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+  }
+  .plan__features {
+    list-style: none;
+    margin: 1.15rem 0 0;
+    padding: 1.15rem 0 0;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex-grow: 1;
+  }
+  .plan__features li {
+    position: relative;
+    padding-left: 1.1rem;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+  }
+  .plan__features li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 1px;
+    background: var(--color-notch-mid);
+  }
+  .plan__cta {
+    margin-top: 1.5rem;
+    align-self: flex-start;
+  }
+
+  .plan-notes {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .plan-notes p {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    max-width: 68ch;
+  }
+
+  .table-wrapper { margin-top: 1.5rem; }
+  .callout { margin-top: 1.25rem; }
+  .callout p {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+  }
+
+  /* Feature list */
+  .feature-list {
+    list-style: none;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem 2rem;
+  }
+  @media (max-width: 640px) {
+    .feature-list { grid-template-columns: minmax(0, 1fr); }
+  }
+  .feature-list li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    border-left: 2px solid var(--color-border);
+    padding-left: 0.9rem;
+  }
+  .feature-list__title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .feature-list__desc {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .prose {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.25rem;
+  }
+  .prose p {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    max-width: 68ch;
+  }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .cta-section { border-bottom: none; }
+</style>
