@@ -1,0 +1,420 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="Quickstart — TrustNotch Docs"
+  description="Record an entry, fetch its proof, and verify it yourself with an independent open-source tool. Signed receipts, RFC 6962 inclusion proofs, Bitcoin anchoring."
+  canonicalPath="/docs"
+>
+  <div class="page-wrapper">
+
+    <!-- Hero -->
+    <section class="section hero" aria-labelledby="docs-hero-heading">
+      <div class="section__label">Quickstart</div>
+      <h1 id="docs-hero-heading">From zero to a proof you verified yourself</h1>
+      <p class="hero__sub">
+        Record an entry, fetch its proof, and check it on your own machine with a tool
+        that talks to nothing we run. You don't have to trust us — in about ten minutes
+        you can confirm that for yourself.
+      </p>
+    </section>
+
+    <!-- Timing -->
+    <section class="section" aria-labelledby="timing-heading">
+      <h2 id="timing-heading">When each layer of proof arrives</h2>
+      <p class="body-text">
+        A proof is built in layers, and they don't all arrive at once. Knowing the
+        schedule first means nothing below looks broken when it is working correctly.
+      </p>
+
+      <div class="table-wrapper mt-sm">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">Layer</th>
+              <th scope="col">Available</th>
+              <th scope="col">What it establishes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ed25519 receipt</td>
+              <td>Immediately</td>
+              <td>We saw this exact entry at the stated time</td>
+            </tr>
+            <tr>
+              <td>RFC 6962 inclusion proof</td>
+              <td>Within about 60 seconds</td>
+              <td>The entry sits in a Merkle tree it cannot be quietly removed from</td>
+            </tr>
+            <tr>
+              <td>OpenTimestamps commitment</td>
+              <td>With the first proof bundle</td>
+              <td>A calendar has committed to the batch root</td>
+            </tr>
+            <tr>
+              <td>Bitcoin attestation</td>
+              <td>Later, typically hours</td>
+              <td>That commitment is embedded in Bitcoin's history</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="body-text mt-sm">
+        Steps 1 to 4 take you through the inclusion proof. The Bitcoin attestation
+        arrives on its own schedule; step 5 covers how to read its status.
+      </p>
+    </section>
+
+    <!-- 1. Key -->
+    <section class="section" aria-labelledby="key-heading">
+      <h2 id="key-heading">1. Get an API key</h2>
+      <p class="body-text">
+        Two ways in, depending on whether a person or a program is signing up. Both
+        produce the same kind of key, and both show it exactly once.
+      </p>
+
+      <h3 class="subsection-title">If you are a person</h3>
+      <p class="body-text">
+        Sign up at <a href="https://app.trustnotch.com/signup">app.trustnotch.com/signup</a>,
+        confirm your email, then create a key from the API keys panel on your dashboard.
+        Hold up to five at a time; revoke any of them whenever you like.
+      </p>
+
+      <h3 class="subsection-title">If you are an agent</h3>
+      <p class="body-text">
+        Signing up takes two calls and no human. Request a challenge, solve a small
+        proof-of-work, submit the solution. The work is plain SHA-256 with nothing
+        outside the standard library — it makes bulk account creation expensive, and
+        that is all it is for.
+      </p>
+
+      <div class="code-block mt-sm">
+        <pre><code>{`import hashlib, json, urllib.request
+
+BASE = "https://api.trustnotch.com"
+SEP = b"|"
+
+def post(path, body=None):
+    data = json.dumps(body).encode() if body is not None else b""
+    req = urllib.request.Request(
+        BASE + path, data=data,
+        headers={"Content-Type": "application/json"}, method="POST")
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return json.loads(r.read())
+
+def leading_zero_bits(d):
+    bits = 0
+    for byte in d:
+        if byte == 0:
+            bits += 8
+            continue
+        bits += 8 - byte.bit_length()
+        break
+    return bits
+
+# Ask for a challenge.
+ch = post("/v1/accounts/challenge")
+
+# Find a nonce whose digest has enough leading zero bits.
+n = 0
+while True:
+    nonce = str(n)
+    msg = SEP.join((ch["random"].encode(), str(ch["issued_at"]).encode(), nonce.encode()))
+    if leading_zero_bits(hashlib.sha256(msg).digest()) >= ch["difficulty_bits"]:
+        break
+    n += 1
+
+# Submit it. The key is in account["api_key"], shown only here.
+account = post("/v1/accounts", {
+    "random": ch["random"],
+    "issued_at": ch["issued_at"],
+    "signature": ch["signature"],
+    "nonce": nonce,
+})
+
+print(account["account_id"], account["plan"], account["included_monthly"])`}</code></pre>
+      </div>
+
+      <p class="body-text mt-sm">
+        At the default 20 bits that search takes roughly a million attempts — a second
+        or two in Python, less in a compiled language. The challenge lasts 300 seconds
+        and is bound to the IP that asked for it, so solve and submit from the same
+        host. New accounts start free with 10,000 entries a month and no card.
+      </p>
+    </section>
+
+    <!-- 2. Record -->
+    <section class="section" aria-labelledby="record-heading">
+      <h2 id="record-heading">2. Record an entry</h2>
+      <p class="body-text">
+        Send the entry with your key as a bearer token. Two submission modes; pick one
+        per entry.
+      </p>
+
+      <h3 class="subsection-title">Standard — send the payload</h3>
+      <p class="body-text">
+        We canonicalize your JSON, hash it, and store both.
+      </p>
+
+      <div class="code-block mt-sm">
+        <pre><code>{`curl -X POST https://api.trustnotch.com/v1/logs -H "Authorization: Bearer $TN_KEY" -H "Content-Type: application/json" -d '{"payload":{"agent":"support-bot","action":"tool_call","tool":"search"}}'`}</code></pre>
+      </div>
+
+      <div class="code-block mt-sm">
+        <pre><code>{`{
+  "id": "01a015d7-2d97-74d2-9d02-b268349a9c56",
+  "content_hash": "eb3bca757a55f2d2c8640195882504a862e1e11c9f3fb399fce74e2893a825d8",
+  "created_at": "2026-08-18T17:06:58.582994Z",
+  "receipt_signature": "N7uipFCbADukNcoLCa848V5u6BWC9IH...",
+  "receipt_key_id": 1
+}`}</code></pre>
+      </div>
+
+      <p class="body-text mt-sm">
+        <code>receipt_signature</code> is an Ed25519 signature over the entry's leaf
+        hash, made with the published key named by <code>receipt_key_id</code>. Step 4
+        checks it.
+      </p>
+
+      <h3 class="subsection-title">Zero-PII — send only the hash</h3>
+      <p class="body-text">
+        If the content is personal data, hash it yourself and send the digest alone. We
+        never receive the underlying bytes, so there is nothing in our database to leak,
+        disclose, or erase. Under the EU AI Act, this is usually the mode you want.
+      </p>
+
+      <div class="code-block mt-sm">
+        <pre><code>{`# Hashed locally. The bytes never leave your machine.
+H=$(printf '%s' '{"subject":"alice@example.com","decision":"approved"}' | sha256sum | cut -d' ' -f1)
+
+curl -X POST https://api.trustnotch.com/v1/logs -H "Authorization: Bearer $TN_KEY" -H "Content-Type: application/json" -d "{\\"content_hash\\":\\"$H\\"}"`}</code></pre>
+      </div>
+
+      <p class="body-text mt-sm">
+        The response has the same shape, and the <code>content_hash</code> it returns
+        matches the digest you computed. Receipt, inclusion and anchoring all work
+        exactly as they do in standard mode. Send neither field or both and the request
+        is rejected.
+      </p>
+    </section>
+
+    <!-- 3. Proof -->
+    <section class="section" aria-labelledby="proof-heading">
+      <h2 id="proof-heading">3. Fetch the proof</h2>
+      <p class="body-text">
+        Ask for the bundle using the <code>id</code> from step 2.
+      </p>
+
+      <div class="code-block mt-sm">
+        <pre><code>{`curl https://api.trustnotch.com/v1/logs/$LOG_ID/proof -H "Authorization: Bearer $TN_KEY" -o bundle.json`}</code></pre>
+      </div>
+
+      <p class="body-text mt-sm">
+        Try it immediately and you get a 409. That is correct: entries are batched into
+        a Merkle tree on a roughly 60-second timer, and there is no inclusion proof
+        before the batch exists.
+      </p>
+
+      <div class="code-block mt-sm">
+        <pre><code>{`{"detail":"proof not available yet: entry not batched (retry within ~60s)"}`}</code></pre>
+      </div>
+
+      <p class="body-text mt-sm">
+        Wait a minute, ask again, and you get the leaf the proof commits to, the signed
+        receipt, the inclusion proof, and the anchor state:
+      </p>
+
+      <div class="code-block mt-sm">
+        <pre><code>{`{
+  "version": { "proof_format": 1, "leaf_format": 1 },
+  "entry": {
+    "id": "01a015d7-2d97-74d2-9d02-b268349a9c56",
+    "account_id": "01a015d6-69e4-7100-9731-db878bda2336",
+    "content_hash": "eb3bca757a55f2d2c86401958825...",
+    "created_at": "2026-08-18T17:06:58.582994Z"
+  },
+  "leaf_hash": "b78311af2fc8d109113e9996d880653b...",
+  "receipt": { "signature": "37bba2a4509b003ba435...", "key_id": 1 },
+  "inclusion": {
+    "leaf_index": 0,
+    "tree_size": 2,
+    "merkle_root": "f1d63cfac67f57530ff75fb10c967fb0...",
+    "audit_path": ["0b45a2aeda5efacbce02b0f74b0db7cf..."]
+  },
+  "anchor": {
+    "ots_status": "pending",
+    "bitcoin_block_height": null,
+    "bitcoin_block_hash": null,
+    "bitcoin_tx_id": null,
+    "confirmations": 0,
+    "ots_proof": "004f70656e54696d657374616d7073..."
+  }
+}`}</code></pre>
+      </div>
+
+      <p class="body-text mt-sm">
+        The bundle is self-contained. Everything needed to check it is in the file,
+        except the public keys — and those ship inside the verifier rather than being
+        fetched from us.
+      </p>
+    </section>
+
+    <!-- 4. Verify -->
+    <section class="section" aria-labelledby="verify-heading">
+      <h2 id="verify-heading">4. Verify it yourself</h2>
+      <p class="body-text">
+        This is the step that matters. The verifier is a separate open-source package
+        carrying its own copy of the trusted key directory.
+      </p>
+
+      <div class="code-block mt-sm">
+        <pre><code>{`pip install trustnotch
+trustnotch verify bundle.json`}</code></pre>
+      </div>
+
+      <div class="code-block mt-sm">
+        <pre><code>{`receipt:            pass
+inclusion:          pass
+anchor_structural:  na
+reported anchor:    pending
+errors:
+  - ots_proof commits the root via a calendar attestation but is not yet anchored to a Bitcoin block
+verified`}</code></pre>
+      </div>
+
+      <p class="body-text mt-sm">
+        Exit code <code>0</code> means verified, <code>1</code> means a tier failed,
+        <code>2</code> means the file could not be read. Note the <code>errors</code>
+        line on a passing run: it reports that the Bitcoin attestation hasn't landed,
+        which for a minutes-old entry is expected, not a fault.
+      </p>
+
+      <h3 class="subsection-title">Prove it can say no</h3>
+      <p class="body-text">
+        A verifier that approves everything is worthless. Change one character anywhere
+        in the bundle and run it again:
+      </p>
+
+      <div class="code-block mt-sm">
+        <pre><code>{`receipt:            fail
+inclusion:          fail
+errors:
+  - echoed leaf_hash does not match recomputed value (recomputed used)
+  - receipt signature does not verify against the recomputed leaf
+  - inclusion proof does not reconstruct the stated merkle_root
+NOT verified`}</code></pre>
+      </div>
+
+      <p class="body-text mt-sm">
+        One altered character breaks three independent checks and the exit code becomes
+        <code>1</code>. Do this once, yourself, before trusting anything else here.
+      </p>
+
+      <h3 class="subsection-title">Verifying with no network</h3>
+      <p class="body-text">
+        <code>--offline</code> skips anything that would reach the network. Be precise
+        about what that buys: the inclusion proof is fully checkable offline, but the
+        receipt comes back <code>na</code> rather than <code>pass</code>, because
+        checking a signature needs the key directory. <code>--json</code> gives
+        machine-readable output.
+      </p>
+    </section>
+
+    <!-- 5. Claims -->
+    <section class="section" aria-labelledby="claims-heading">
+      <h2 id="claims-heading">5. What we claim, and what we don't</h2>
+      <p class="body-text">
+        Anchor status moves <code>pending</code> to <code>confirmed</code> to
+        <code>final</code>. Every bundle is served at whatever stage it has reached and
+        labelled honestly, so you choose the threshold your use case needs.
+      </p>
+      <ul class="claims mt-sm">
+        <li>
+          <strong>Entries are anchored in batches, not individually.</strong> Many
+          entries across many accounts share one Merkle root and one OpenTimestamps
+          attestation. There is no Bitcoin transaction per entry — anyone claiming
+          otherwise is describing something nobody could afford.
+        </li>
+        <li>
+          <strong>Anchor metadata is reported, not trusted.</strong> The verifier
+          surfaces our recorded status, height and confirmations as our observation. It
+          does not treat them as a trust root, and neither should you.
+        </li>
+        <li>
+          <strong>Matching a commitment to the real chain is outside the offline
+          verifier.</strong> That needs a block header source. The verifier checks
+          structure and commitment; confirming the block is a step you can take
+          independently.
+        </li>
+        <li>
+          <strong>A receipt proves we saw the entry, not that it is true.</strong> It
+          establishes that this exact content existed at that time and has not changed
+          since. Nothing more.
+        </li>
+      </ul>
+    </section>
+
+    <!-- Next -->
+    <section class="section cta-section" aria-labelledby="next-heading">
+      <h2 id="next-heading">Next</h2>
+      <p class="body-text">
+        The full endpoint reference, with request and response schemas, is published as
+        OpenAPI at <a href="https://api.trustnotch.com/docs">api.trustnotch.com/docs</a>.
+      </p>
+      <div class="cta-actions">
+        <a href="/trustnotch-mcp/" class="btn btn-secondary">MCP server for agents →</a>
+        <a href="/how-verification-works/" class="btn btn-secondary">How verification works →</a>
+        <a href="/pricing/" class="btn btn-secondary">Plans and pricing →</a>
+      </div>
+    </section>
+
+  </div>
+</Layout>
+
+<style>
+  .hero { padding-block-start: clamp(3rem, 8vw, 5rem); }
+  .hero__sub {
+    font-size: clamp(1rem, 2.5vw, 1.1875rem);
+    color: var(--color-text-secondary);
+    max-width: 58ch;
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+  .subsection-title {
+    font-size: 1rem;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .body-text {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    max-width: 65ch;
+  }
+  .mt-sm { margin-top: 0.75rem; }
+  .mt-lg { margin-top: 1.75rem; }
+  .claims {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0;
+    padding-left: 1.25rem;
+    max-width: 70ch;
+  }
+  .claims li {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+  .claims strong { color: var(--color-text); }
+  .cta-section { border-bottom: none; }
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+</style>
