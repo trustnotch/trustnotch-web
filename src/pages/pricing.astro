@@ -210,7 +210,7 @@ const SIGNUP_URL = 'https://app.trustnotch.com/signup';
     <!-- Questions -->
     <section class="section" aria-labelledby="questions-heading">
       <div class="section__label">Before you sign up</div>
-      <h2 id="questions-heading" class="section__heading">Two things worth knowing</h2>
+      <h2 id="questions-heading" class="section__heading">Three things worth knowing</h2>
       <div class="prose">
         <p>
           <strong>Changing plans.</strong> You can move between plans or cancel at any time
@@ -221,6 +221,11 @@ const SIGNUP_URL = 'https://app.trustnotch.com/signup';
           <strong>What an entry is.</strong> One entry is one logged action. You send the
           action and its metadata; TrustNotch returns a signed receipt and includes the
           entry in the next batch.
+        </p>
+        <p>
+          <strong>Getting your API key.</strong> You create and revoke your own keys from the
+          dashboard as soon as your email is confirmed — nothing to request, no waiting on
+          us. The <a href="/docs/">quickstart</a> shows the first call end to end.
         </p>
       </div>
     </section>
@@ -235,6 +240,7 @@ const SIGNUP_URL = 'https://app.trustnotch.com/signup';
       </p>
       <div class="cta-row">
         <a href={SIGNUP_URL} class="btn btn-primary">Create an account &rarr;</a>
+        <a href="/docs/" class="btn btn-secondary">Read the quickstart &rarr;</a>
         <a href="mailto:hello@trustnotch.com" class="btn btn-secondary">Ask a question</a>
       </div>
     </section>

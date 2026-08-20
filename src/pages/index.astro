@@ -20,8 +20,8 @@ import Layout from '../layouts/Layout.astro';
       </p>
       <div class="hero__actions">
         <a href="https://app.trustnotch.com/signup" class="btn btn-primary">Start free &rarr;</a>
-        <a href="/trustnotch-mcp/" class="btn btn-secondary">MCP Server →</a>
-        <a href="https://api.trustnotch.com" class="btn btn-secondary" rel="noopener noreferrer">API</a>
+        <a href="/docs/" class="btn btn-secondary">Quickstart &rarr;</a>
+        <a href="/trustnotch-mcp/" class="btn btn-secondary">MCP Server &rarr;</a>
       </div>
     </section>
 
@@ -72,6 +72,10 @@ import Layout from '../layouts/Layout.astro';
     <section class="section links-section" aria-labelledby="links-heading">
       <h2 id="links-heading" class="sr-only">Get started</h2>
       <div class="links-grid">
+        <a href="/docs/" class="link-card">
+          <span class="link-card__title">Quickstart <span aria-hidden="true">&rarr;</span></span>
+          <span class="link-card__desc">Get a key, record an entry, fetch its proof, and verify it yourself.</span>
+        </a>
         <a href="/trustnotch-mcp/" class="link-card">
           <span class="link-card__title">MCP Server <span aria-hidden="true">→</span></span>
           <span class="link-card__desc">Connect Claude Desktop and other MCP clients to TrustNotch.</span>
@@ -83,10 +87,6 @@ import Layout from '../layouts/Layout.astro';
         <a href="https://pypi.org/project/trustnotch/" class="link-card" rel="noopener noreferrer">
           <span class="link-card__title">PyPI: trustnotch <span aria-hidden="true">↗</span></span>
           <span class="link-card__desc">The standalone offline verifier. <code>pip install trustnotch</code>.</span>
-        </a>
-        <a href="https://api.trustnotch.com" class="link-card" rel="noopener noreferrer">
-          <span class="link-card__title">API <span aria-hidden="true">↗</span></span>
-          <span class="link-card__desc">REST API at <code>api.trustnotch.com</code> — submit, fetch, and prove log entries.</span>
         </a>
       </div>
     </section>
