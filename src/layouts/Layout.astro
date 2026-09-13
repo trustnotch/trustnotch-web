@@ -1,4 +1,4 @@
-﻿---
+---
 import '../styles/global.css';
 
 interface Props {
@@ -31,28 +31,118 @@ const isHome = normalisedPath === '/';
 const orgJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
+  '@id': `${siteUrl}/#org`,
   name: 'TrustNotch',
   url: siteUrl,
   logo: `${siteUrl}/favicon.svg`,
   description:
-    'Tamper-evident audit logs for AI agents: Ed25519-signed receipts, RFC 6962 Merkle batching, Bitcoin anchoring, and an independent offline verifier.',
+    'EU-built, tamper-evident audit logging for AI agents: Ed25519-signed receipts, RFC 6962 Merkle batching, Bitcoin anchoring, and an independent offline verifier.',
+  areaServed: 'EU',
+  sameAs: [
+    'https://github.com/trustnotch',
+    'https://pypi.org/project/trustnotch/',
+    'https://pypi.org/project/trustnotch-mcp/',
+  ],
 };
 
 const appJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
   name: 'TrustNotch',
-  applicationCategory: 'DeveloperApplication',
+  applicationCategory: 'BusinessApplication',
   operatingSystem: 'Any',
   url: siteUrl,
   description:
-    'An audit-log service for AI agents. Every entry returns a cryptographically signed receipt, is batched into an RFC 6962 Merkle tree, and is anchored to Bitcoin. Any entry can be verified offline by an independent verifier.',
+    'TrustNotch is a tamper-evident audit log for AI agents. Every action returns a cryptographically signed receipt, is batched into an RFC 6962 Merkle tree, and is anchored to Bitcoin via OpenTimestamps, so any entry can be verified independently and offline, without trusting TrustNotch. Built and hosted in the EU, designed for EU AI Act Article 12 record-keeping.',
+  featureList: [
+    'Tamper-evident audit logs for AI agents',
+    'Ed25519-signed receipts on submission',
+    'RFC 6962 Merkle batching',
+    'Bitcoin anchoring via OpenTimestamps',
+    'Independent offline verification with an open-source verifier',
+    'Model Context Protocol (MCP) support',
+    'Autonomous machine sign-up and API keys',
+    'EU-hosted, EU data residency',
+  ],
   offers: {
     '@type': 'Offer',
     price: '0',
     priceCurrency: 'EUR',
-    description: 'Free tier: 10,000 entries per month, no card required.',
+    description: 'Free tier: 10,000 entries per month, no card required. Paid plans available.',
+    url: `${siteUrl}/pricing/`,
   },
+  publisher: { '@id': `${siteUrl}/#org` },
+};
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'What is an AI audit log?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'A record of the actions and decisions an AI system takes, kept so you can review or prove them later. A tamper-evident audit log goes further: it is built so any change to a past entry can be detected.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What does tamper-evident mean?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'You cannot quietly alter a record after the fact. Every entry is signed and anchored to Bitcoin, so if a single character changes, verification fails and the change is obvious.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do I need this for the EU AI Act?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'The EU AI Act requires providers of high-risk AI systems to keep automatic logs of what their systems do, under Article 12. Those obligations are being phased in over the next couple of years. TrustNotch gives you records designed to meet that kind of requirement. This is not legal advice, so check how the rules apply to your own system.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can I verify a record without trusting TrustNotch?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. The verifier is free and open-source. It checks the signature and the Bitcoin timestamp by itself, so it works even if TrustNotch is offline or gone.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How do my AI agents send their logs?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Over a simple HTTP API, or through the Model Context Protocol so agents can log actions directly. An agent can even create its own free account and API key without a human.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Where is my data stored?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'In the EU. TrustNotch is built and hosted on infrastructure in Helsinki, Finland, with no third-party trackers and no data leaving the region.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Is TrustNotch open-source?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'The verifier is open-source and published on PyPI and GitHub, so anyone can inspect exactly how verification works. The service that stores and anchors your logs is run by TrustNotch.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What does TrustNotch cost?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'There is a free tier to start, with paid plans as you grow. See the pricing page for current tiers.',
+      },
+    },
+  ],
 };
 ---
 
@@ -91,6 +181,7 @@ const appJsonLd = {
     {isHome && (
       <script type="application/ld+json" set:html={JSON.stringify(orgJsonLd)} />
       <script type="application/ld+json" set:html={JSON.stringify(appJsonLd)} />
+      <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
     )}
   </head>
   <body>
