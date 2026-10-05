@@ -46,8 +46,9 @@ import Layout from '../layouts/Layout.astro';
         <div class="proof-part">
           <div class="proof-part__label">Bitcoin anchor</div>
           <p class="proof-part__desc">
-            An OpenTimestamps proof that chains the batch root to a Bitcoin block header
-            hash — establishing that the batch existed before that block was mined.
+            An OpenTimestamps proof: a chain of hash operations from the batch root to a
+            value it claims sits in a specific Bitcoin block. Once that value is matched
+            against the real block, it shows the batch existed before the block was mined.
           </p>
         </div>
       </div>
@@ -69,9 +70,12 @@ import Layout from '../layouts/Layout.astro';
               If the entry's content was changed after submission, the signature check fails.
             </p>
             <p class="step__desc step__desc--note">
-              Public keys are fetched once from the public <code>/v1/keys</code> directory,
-              or loaded from a local file via <code>TRUSTNOTCH_PUBKEYS_PATH</code>.
-              After that initial fetch, no further server contact is needed.
+              The verifier ships with TrustNotch's published public keys built in, so this
+              check needs no network at all. The same keys are published at
+              <code>/v1/keys</code> for comparison, and you can point the verifier at your
+              own copy with <code>--keys</code>. The MCP server's verify tools fetch the keys
+              from <code>/v1/keys</code>, or read a pinned file set in
+              <code>TRUSTNOTCH_PUBKEYS_PATH</code>.
             </p>
           </div>
         </li>
@@ -83,8 +87,9 @@ import Layout from '../layouts/Layout.astro';
               Using the sibling hashes in the Merkle path, the verifier recomputes each
               interior node up to the batch root, following the RFC&nbsp;6962 construction:
               interior nodes are <code>SHA-256(0x01 || left || right)</code>.
-              The computed root must match the root committed in both the receipt and the
-              OpenTimestamps proof.
+              The computed root must match the root the OpenTimestamps proof commits to.
+              The receipt does not carry the root: it was signed at submission, before the
+              batch existed, and it covers the leaf.
             </p>
             <p class="step__desc step__desc--note">
               This step proves the entry is in the specific batch, not merely that the batch
@@ -98,11 +103,14 @@ import Layout from '../layouts/Layout.astro';
           <div class="step__body">
             <h3 class="step__title">Verify the Bitcoin anchor</h3>
             <p class="step__desc">
-              The OpenTimestamps proof encodes a hash chain from the batch root to a
-              Bitcoin block header hash. The verifier checks this chain structurally —
-              confirming each hashing operation in the chain is correct. A valid chain
-              establishes that the batch root was committed before the referenced Bitcoin
-              block was mined.
+              The verifier parses the OpenTimestamps proof and checks that it starts from
+              your batch root and arrives at a committed value for a named Bitcoin block.
+              This check is structural and runs fully offline: it confirms the proof is well
+              formed and belongs to your batch. One comparison is left to you on purpose.
+              The committed value must equal the Merkle root of the named block, which any
+              Bitcoin node or block explorer can show you, so this step needs no trust in
+              TrustNotch either. Once it matches, the batch is proven to have existed before
+              that block was mined.
             </p>
             <p class="step__desc step__desc--note">
               Bitcoin anchoring is asynchronous: the signed receipt is returned at
@@ -123,15 +131,16 @@ import Layout from '../layouts/Layout.astro';
       <div class="prose">
         <p>
           All three checks run locally. The math does not involve TrustNotch — once a
-          proof is in your hands, it is yours. A proof that verifies today will verify
-          in ten years, even if TrustNotch has shut down.
+          proof is in your hands, it is yours. A proof that verifies today keeps
+          verifying, even if TrustNotch has shut down. It depends only on the bundle you
+          hold, open-source code, and the strength of SHA-256 and Ed25519.
         </p>
         <p>
           This is deliberately different from "trust our immutability claims." A signed
           receipt from a vendor that controls its own database is an assertion;
-          a proof that recomputes against Bitcoin's public ledger is independently
-          checkable evidence. The distinction matters in a compliance audit or legal
-          proceeding where "we say it's immutable" is not acceptable.
+          a proof you can recompute yourself, and match against Bitcoin's public chain,
+          is evidence anyone can check. The distinction matters in a compliance audit or
+          legal proceeding where "we say it's immutable" is not acceptable.
         </p>
         <p>
           Because the verifier is open source, anyone can read what it does. There is no

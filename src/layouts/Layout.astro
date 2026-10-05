@@ -99,7 +99,7 @@ const faqJsonLd = {
       name: 'Do I need this for the EU AI Act?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'The EU AI Act requires providers of high-risk AI systems to keep automatic logs of what their systems do, under Article 12. Those obligations are being phased in over the next couple of years. TrustNotch gives you records designed to meet that kind of requirement. This is not legal advice, so check how the rules apply to your own system.',
+        text: 'The EU AI Act requires high-risk AI systems to record events automatically over their lifetime (Article 12), and providers and deployers must keep those logs for at least six months (Articles 19 and 26). The rules apply from 2 December 2027 for standalone high-risk uses such as hiring and credit scoring, and from 2 August 2028 for AI built into regulated products. The Act does not say how to protect logs against editing. TrustNotch makes them verifiable, so they can stand as evidence. This is not legal advice, so check how the rules apply to your own system.',
       },
     },
     {
@@ -107,7 +107,7 @@ const faqJsonLd = {
       name: 'Can I verify a record without trusting TrustNotch?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes. The verifier is free and open-source. It checks the signature and the Bitcoin timestamp by itself, so it works even if TrustNotch is offline or gone.',
+        text: 'Yes. The verifier is free, open-source, and runs on your own machine. It checks the signature, the Merkle proof and the Bitcoin anchor proof without contacting us. To confirm the anchor against the real Bitcoin chain, you compare it with a block header from any Bitcoin node or block explorer you trust, never from us. So it works even if TrustNotch is offline or gone.',
       },
     },
     {
@@ -123,7 +123,7 @@ const faqJsonLd = {
       name: 'Where is my data stored?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'In the EU. TrustNotch is built and hosted on infrastructure in Helsinki, Finland, with no third-party trackers and no data leaving the region.',
+        text: 'In the EU. Your log data is stored on infrastructure in Helsinki, Finland, with no third-party trackers. The only thing sent outside our servers is each batch\'s Merkle root, a hash with no content, which goes to public OpenTimestamps servers to be anchored to Bitcoin.',
       },
     },
     {

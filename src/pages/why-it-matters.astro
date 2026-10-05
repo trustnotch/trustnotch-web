@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout
   title="Why tamper-evident AI logging matters — TrustNotch"
-  description="EU AI Act Article 12 requires high-risk AI systems to keep tamper-evident logs. TrustNotch addresses this with cryptographically signed, Bitcoin-anchored, independently verifiable audit logs."
+  description="EU AI Act Article 12 requires automatic logs for high-risk AI from December 2027, not proof they are unaltered. TrustNotch makes them verifiable, offline."
   canonicalPath="/why-it-matters"
 >
   <div class="page-wrapper">
@@ -28,32 +28,40 @@ import Layout from '../layouts/Layout.astro';
       <h2 id="article12-heading" class="section__heading">The logging obligation</h2>
       <div class="prose">
         <p>
-          Article 12 of the EU AI Act requires providers and operators of high-risk
-          AI systems to ensure those systems automatically record events ("logs")
-          throughout their operational lifetime — logs that are sufficient to
-          reconstruct the system's processing and establish accountability after
-          the fact.
+          Article&nbsp;12 of the EU AI Act requires high-risk AI systems to technically
+          allow the automatic recording of events (logs) over their whole lifetime. The
+          logs must support traceability: spotting situations where the system may present
+          a risk or has been substantially modified, feeding the provider's post-market
+          monitoring, and letting deployers monitor how the system runs.
         </p>
         <p>
-          The regulation specifies that logging must be capable of identifying the
-          cause of malfunctions or unexpected results. Importantly, it requires
-          tamper-evidence: records that can be shown not to have been modified
-          since they were created.
+          Two further articles turn that capability into a duty to keep records. Providers
+          (Article&nbsp;19) and deployers (Article&nbsp;26) must keep the logs under their
+          control for at least six months, and longer where other EU or national law
+          requires it.
         </p>
         <p>
-          TrustNotch is designed to address these logging requirements for AI
-          agents and the systems running them. Using TrustNotch does not itself
-          guarantee regulatory compliance — that determination depends on your
-          specific system and legal context — but it provides the cryptographic
-          foundations that tamper-evident logging requires.
+          What the Act does not do is say how to protect those logs from being edited.
+          That gap matters more than it looks. A log that someone with admin access can
+          quietly change is weak evidence in an audit or a dispute, however complete it
+          is. TrustNotch closes the gap: every entry carries a signed receipt and a
+          Bitcoin anchor that anyone can check without trusting us.
+        </p>
+        <p>
+          Using TrustNotch does not by itself make a system compliant. That depends on
+          what you log, your role under the Act, and your legal context. What it gives
+          your logs is the one property the law leaves to you: they can be shown not to
+          have changed.
         </p>
       </div>
       <div class="callout mt-md">
         <p>
-          <strong>Note on dates:</strong> The EU AI Act's application timeline for
-          high-risk AI systems is defined in the Regulation text and the Official Journal.
-          Verify specific dates against those primary sources before making compliance
-          decisions.
+          <strong>Dates.</strong> The Digital Omnibus on AI, Regulation (EU) 2026/1744, in
+          force since 27 July 2026, set when the high-risk obligations apply, including
+          Article&nbsp;12. Standalone high-risk systems listed in Annex III, such as hiring,
+          credit scoring and education, are covered from 2 December 2027. AI built into
+          products covered by Annex I, such as medical devices and machinery, is covered
+          from 2 August 2028.
         </p>
       </div>
     </section>
