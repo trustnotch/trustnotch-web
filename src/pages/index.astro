@@ -30,8 +30,8 @@ import Layout from '../layouts/Layout.astro';
       <h2 id="explainer-heading" class="sr-only">What TrustNotch is</h2>
       <p class="explainer__lead">
         Think of it as a flight recorder for your AI agents. When an AI system makes a
-        decision or takes an action, TrustNotch writes it into a record no one can change
-        afterward, not even us.
+        decision or takes an action, TrustNotch records it so that any later change would
+        show, including a change made by us.
       </p>
       <p class="explainer__body">
         If a customer disputes an outcome, an auditor asks what happened, or a regulator
@@ -40,9 +40,10 @@ import Layout from '../layouts/Layout.astro';
       </p>
       <p class="explainer__body">
         As AI starts taking real actions on its own, being able to show what it did is
-        becoming a legal expectation, not just good practice. The EU AI Act will require
-        high-risk AI systems to keep automatic, tamper-resistant records of what they do.
-        TrustNotch is built for exactly that.
+        becoming a legal expectation, not just good practice. The EU AI Act requires
+        high-risk AI systems to record their activity automatically, from 2 December 2027
+        for standalone systems. The law asks for the records. It does not say how to make
+        them believable. That is the part TrustNotch does.
       </p>
     </section>
 
@@ -132,8 +133,9 @@ import Layout from '../layouts/Layout.astro';
               Anyone can confirm a record is genuine and unchanged, using free open-source
               software. The open-source
               <a href="/how-verification-works/"><code>trustnotch</code> verifier</a>
-              checks the signature and the Bitcoin anchor by itself, so the proof stands
-              even if our service is offline.
+              checks the signature, the Merkle proof and the anchor proof on your own
+              machine, so the proof stands even if our service is offline. Matching the
+              anchor to the Bitcoin chain takes one block header, from any source you choose.
             </p>
           </div>
         </li>
@@ -162,8 +164,9 @@ import Layout from '../layouts/Layout.astro';
         <div class="feature-card">
           <h3 class="feature-card__title">Built and hosted in the EU</h3>
           <p class="feature-card__desc">
-            Your data stays in the EU, on infrastructure we run in Helsinki. No third-party
-            trackers, no data leaving the region.
+            Your log data is stored in the EU, on infrastructure we run in Helsinki, with no
+            third-party trackers. The only thing that leaves is each batch's Merkle root, a
+            hash with no content, sent to public timestamp servers for anchoring.
           </p>
         </div>
         <div class="feature-card">
@@ -191,11 +194,11 @@ import Layout from '../layouts/Layout.astro';
         </details>
         <details class="faq__item">
           <summary class="faq__q">Do I need this for the EU AI Act?</summary>
-          <p class="faq__a">The EU AI Act requires providers of high-risk AI systems to keep automatic logs of what their systems do, under Article 12. Those obligations are being phased in over the next couple of years. TrustNotch gives you records designed to meet that kind of requirement. This is not legal advice, so check how the rules apply to your own system.</p>
+          <p class="faq__a">The EU AI Act requires high-risk AI systems to record events automatically over their lifetime (Article 12), and providers and deployers must keep those logs for at least six months (Articles 19 and 26). The rules apply from 2 December 2027 for standalone high-risk uses such as hiring and credit scoring, and from 2 August 2028 for AI built into regulated products. The Act does not say how to protect logs against editing. TrustNotch makes them verifiable, so they can stand as evidence. This is not legal advice, so check how the rules apply to your own system.</p>
         </details>
         <details class="faq__item">
           <summary class="faq__q">Can I verify a record without trusting TrustNotch?</summary>
-          <p class="faq__a">Yes. The verifier is free and open-source. It checks the signature and the Bitcoin timestamp by itself, so it works even if TrustNotch is offline or gone.</p>
+          <p class="faq__a">Yes. The verifier is free, open-source, and runs on your own machine. It checks the signature, the Merkle proof and the Bitcoin anchor proof without contacting us. To confirm the anchor against the real Bitcoin chain, you compare it with a block header from any Bitcoin node or block explorer you trust, never from us. So it works even if TrustNotch is offline or gone.</p>
         </details>
         <details class="faq__item">
           <summary class="faq__q">How do my AI agents send their logs?</summary>
@@ -203,7 +206,7 @@ import Layout from '../layouts/Layout.astro';
         </details>
         <details class="faq__item">
           <summary class="faq__q">Where is my data stored?</summary>
-          <p class="faq__a">In the EU. TrustNotch is built and hosted on infrastructure in Helsinki, Finland, with no third-party trackers and no data leaving the region.</p>
+          <p class="faq__a">In the EU. Your log data is stored on infrastructure in Helsinki, Finland, with no third-party trackers. The only thing sent outside our servers is each batch's Merkle root, a hash with no content, which goes to public OpenTimestamps servers to be anchored to Bitcoin.</p>
         </details>
         <details class="faq__item">
           <summary class="faq__q">Is TrustNotch open-source?</summary>

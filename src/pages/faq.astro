@@ -34,12 +34,13 @@ import Layout from '../layouts/Layout.astro';
           <ul class="faq-list">
             <li>The Ed25519 signature in the receipt matches the exact content submitted.</li>
             <li>The Merkle inclusion path recomputes correctly to the batch root.</li>
-            <li>The OpenTimestamps proof chains the batch root to a Bitcoin block header.</li>
+            <li>The OpenTimestamps proof commits the batch root to a named Bitcoin block. Confirming that block against the real chain takes a block header from any source you trust.</li>
           </ul>
           <p>
-            All three steps run on your machine. A proof that verifies now will verify in
-            ten years, even if TrustNotch has shut down. That is the structural guarantee —
-            not a policy or a promise.
+            All three steps run on your machine. A proof that verifies today keeps
+            verifying, even if TrustNotch has shut down, because it depends only on the
+            bundle, open-source code and standard cryptography. That is a property of the
+            maths, not a policy or a promise.
           </p>
         </div>
       </div>
@@ -69,8 +70,11 @@ import Layout from '../layouts/Layout.astro';
             offline, even years later. New entries are signed with the current key.
           </p>
           <p>
-            You can also pin a local key file via <code>TRUSTNOTCH_PUBKEYS_PATH</code> so
-            verification never requires a network call at all.
+            The <code>trustnotch</code> verifier carries the published keys inside the
+            package, so verification needs no network call. A verifier installed before a
+            rotation needs an update, or the new key passed with <code>--keys</code>, to
+            check receipts signed under the new key. The MCP server reads a pinned key file
+            from <code>TRUSTNOTCH_PUBKEYS_PATH</code>.
           </p>
         </div>
       </div>
@@ -125,7 +129,8 @@ import Layout from '../layouts/Layout.astro';
             <a href="https://opentimestamps.org" rel="noopener noreferrer">OpenTimestamps</a>,
             TrustNotch anchors each batch's Merkle root to a Bitcoin block — establishing
             that the batch existed before that block was mined. Anyone can verify this
-            anchor without trusting TrustNotch or any other service.
+            anchor without trusting TrustNotch: the proof is checked offline, and the block
+            it names can be confirmed against any copy of the Bitcoin chain.
           </p>
           <p>
             Unlike centralized timestamp authorities, Bitcoin's proof-of-work makes
@@ -179,10 +184,13 @@ import Layout from '../layouts/Layout.astro';
         <h3 class="faq-item__q">What is EU AI Act Article 12?</h3>
         <div class="faq-item__a prose">
           <p>
-            Article 12 of the EU AI Act requires providers and operators of high-risk AI
-            systems to ensure those systems automatically record events throughout their
-            operational lifetime — logs sufficient to reconstruct processing and establish
-            accountability. The regulation requires those logs to be tamper-evident.
+            Article&nbsp;12 of the EU AI Act requires high-risk AI systems to record events
+            automatically over their lifetime, so their behaviour can be traced: risk
+            situations, substantial modifications, and how the system runs in use.
+            Providers and deployers must keep those logs for at least six months. The
+            rules apply from 2 December 2027 (Annex III systems) and 2 August 2028
+            (Annex I products). The Act does not say how logs must be protected against
+            editing, and that is the gap TrustNotch addresses.
           </p>
           <p>
             TrustNotch provides the cryptographic foundations that tamper-evident logging
