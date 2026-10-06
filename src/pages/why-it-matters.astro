@@ -3,22 +3,23 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout
-  title="Why tamper-evident AI logging matters — TrustNotch"
-  description="EU AI Act Article 12 requires automatic logs for high-risk AI from December 2027, not proof they are unaltered. TrustNotch makes them verifiable, offline."
+  title="AI governance needs evidence: verifiable AI audit logs — TrustNotch"
+  description="AI governance and the EU AI Act require logs of what AI systems do. TrustNotch makes them verifiable evidence: signed, Bitcoin-anchored, checkable offline."
   canonicalPath="/why-it-matters"
 >
   <div class="page-wrapper">
 
     <!-- Hero -->
     <section class="section hero" aria-labelledby="wim-hero-heading">
-      <div class="section__label">Regulatory context</div>
+      <div class="section__label">AI governance</div>
       <h1 id="wim-hero-heading">
-        Why tamper-evident logging matters for AI
+        AI governance needs evidence
       </h1>
       <p class="hero__sub">
-        Audit logs are only as credible as the evidence that they haven't been
-        altered. For AI systems operating under regulatory scrutiny, "trust us,
-        it's immutable" is not sufficient.
+        Governance frameworks and the EU AI Act both ask you to keep records of what
+        your AI systems do. A record only counts as evidence if you can show it was not
+        changed afterwards. TrustNotch makes that provable, by anyone, without trusting
+        us.
       </p>
     </section>
 
@@ -62,6 +63,32 @@ import Layout from '../layouts/Layout.astro';
           credit scoring and education, are covered from 2 December 2027. AI built into
           products covered by Annex I, such as medical devices and machinery, is covered
           from 2 August 2028.
+        </p>
+      </div>
+    </section>
+
+    <!-- Governance frameworks -->
+    <section class="section" aria-labelledby="governance-heading">
+      <div class="section__label">Governance frameworks</div>
+      <h2 id="governance-heading" class="section__heading">Where logs sit in an AI governance program</h2>
+      <div class="prose">
+        <p>
+          Most responsible AI and governance programs rest on a management system:
+          policies, risk assessments, clear roles, and records that show the system runs
+          as described. ISO/IEC&nbsp;42001, the international standard for AI management
+          systems, makes event logging an explicit control. Control A.6.2.8 asks you to
+          decide at which stages of an AI system's life cycle event logs are recorded,
+          and to keep logging on while the system is in use.
+        </p>
+        <p>
+          Frameworks like this say records must exist. They rarely say how anyone can
+          trust them later. That is the layer TrustNotch fills: the audit trail under the
+          program, not the program itself.
+        </p>
+        <p>
+          ISO/IEC&nbsp;42001 certifies an organisation's management system, not individual
+          tools. No product, TrustNotch included, can make you certified. What TrustNotch
+          can do is produce records your auditors can check for themselves.
         </p>
       </div>
     </section>
@@ -135,6 +162,38 @@ import Layout from '../layouts/Layout.astro';
       </ol>
     </section>
 
+    <!-- What to log -->
+    <section class="section" aria-labelledby="what-to-log-heading">
+      <div class="section__label">In practice</div>
+      <h2 id="what-to-log-heading" class="section__heading">What to log</h2>
+      <div class="prose">
+        <p>
+          TrustNotch does not decide what you record. That stays with you, your risk
+          assessment and your role under the law. These are the events governance
+          reviews tend to ask about first:
+        </p>
+        <ul class="prose-list">
+          <li><strong>Decisions:</strong> what the system concluded, with its inputs or a
+            hash of them, the model or version, and when.</li>
+          <li><strong>Actions and tool calls:</strong> what an agent actually did,
+            especially anything that changed data, spent money or contacted a person.</li>
+          <li><strong>Human oversight:</strong> approvals, overrides, and the moments a
+            person stopped or corrected the system. The AI Act expects high-risk systems
+            to support human oversight (Article&nbsp;14), and these records show it
+            happened.</li>
+          <li><strong>Changes to the system:</strong> model updates, configuration changes
+            and new prompts, so later behaviour can be traced to the version that
+            produced it.</li>
+          <li><strong>Incidents:</strong> errors, refusals, and anything flagged for
+            review.</li>
+        </ul>
+        <p>
+          For personal data, <a href="/docs/">send a salted hash</a> rather than the
+          content. The proof works the same, and the personal data never reaches us.
+        </p>
+      </div>
+    </section>
+
     <!-- GDPR -->
     <section class="section" aria-labelledby="gdpr-heading">
       <div class="section__label">GDPR</div>
@@ -182,6 +241,24 @@ import Layout from '../layouts/Layout.astro';
       </div>
     </section>
 
+    <!-- Scope -->
+    <section class="section" aria-labelledby="scope-heading">
+      <div class="section__label">Scope</div>
+      <h2 id="scope-heading" class="section__heading">What TrustNotch is not</h2>
+      <div class="prose">
+        <ul class="prose-list">
+          <li><strong>Not a governance platform.</strong> It does not keep your model
+            inventory, run risk assessments or manage policies. It makes the records
+            those processes produce verifiable.</li>
+          <li><strong>Not an observability tool.</strong> It is not built for dashboards,
+            traces or debugging. It records the events you choose, so they can stand as
+            evidence.</li>
+          <li><strong>Not a compliance guarantee.</strong> Using it does not by itself make
+            a system compliant with the AI Act or certified under ISO/IEC&nbsp;42001.</li>
+        </ul>
+      </div>
+    </section>
+
     <!-- CTA -->
     <section class="section cta-section" aria-labelledby="cta-heading">
       <div class="section__label">Get started</div>
@@ -221,6 +298,18 @@ import Layout from '../layouts/Layout.astro';
     gap: 1rem;
   }
   .prose p {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    max-width: 68ch;
+  }
+
+  .prose-list {
+    list-style: disc;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     color: var(--color-text-secondary);
     font-size: 0.9375rem;
     line-height: 1.7;
