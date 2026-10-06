@@ -181,14 +181,21 @@ print(account["account_id"], account["plan"], account["included_monthly"])`}</co
 
       <h3 class="subsection-title">Zero-PII — send only the hash</h3>
       <p class="body-text">
-        If the content is personal data, hash it yourself and send the digest alone. We
-        never receive the underlying bytes, so there is nothing in our database to leak,
-        disclose, or erase. Under the EU AI Act, this is usually the mode you want.
+        If the content is personal data, hash it yourself and send the digest alone, so
+        we never receive the underlying bytes. Add a random salt per record: a plain hash
+        of a short value, like an email address, can be guessed by hashing candidates,
+        and the salt stops that. Keep the salt and the original with your own records,
+        because you need both to show later what an entry stood for. Deleting them is
+        also how you erase: without them, the hash we hold cannot practically be tied to
+        anyone. This supports data minimisation under GDPR, and for personal data it is
+        usually the mode you want.
       </p>
 
       <div class="code-block mt-sm">
-        <pre><code>{`# Hashed locally. The bytes never leave your machine.
-H=$(printf '%s' '{"subject":"alice@example.com","decision":"approved"}' | sha256sum | cut -d' ' -f1)
+        <pre><code>{`# Hashed locally with a random salt. The bytes never leave your machine.
+SALT=$(openssl rand -hex 16)
+H=$(printf '%s%s' "$SALT" '{"subject":"alice@example.com","decision":"approved"}' | sha256sum | cut -d' ' -f1)
+# Keep $SALT and the original record with your own copy of the log.
 
 curl -X POST https://api.trustnotch.com/v1/logs -H "Authorization: Bearer $TN_KEY" -H "Content-Type: application/json" -d "{\\"content_hash\\":\\"$H\\"}"`}</code></pre>
       </div>
@@ -279,47 +286,82 @@ trustnotch verify bundle.json`}</code></pre>
         <pre><code>{`receipt:            pass
 inclusion:          pass
 anchor_structural:  na
-reported anchor:    pending
+
+anchor:             not yet anchored to Bitcoin (nothing to verify at this tier)
+
 errors:
   - ots_proof commits the root via a calendar attestation but is not yet anchored to a Bitcoin block
+
+verified (anchoring not yet confirmed)`}</code></pre>
+      </div>
+
+      <p class="body-text mt-sm">
+        Exit code <code>0</code> means no tier failed, and a tier reported
+        <code>na</code> is not a failure. <code>1</code> means at least one tier failed.
+        <code>2</code> means the file could not be read as a proof bundle. Note the
+        <code>errors</code> line on a passing run: it reports that the Bitcoin
+        attestation hasn't landed, which for a minutes-old entry is expected, not a fault.
+      </p>
+
+      <p class="body-text mt-sm">
+        Fetch the bundle again once its batch is in a Bitcoin block, and the anchor tier
+        passes too:
+      </p>
+
+      <div class="code-block mt-sm">
+        <pre><code>{`receipt:            pass
+inclusion:          pass
+anchor_structural:  pass
+
+anchor:             structurally verified -- asserted block 970063 (extracted from the proof); confirmation depth is not checked by this tool
+
 verified`}</code></pre>
       </div>
 
       <p class="body-text mt-sm">
-        Exit code <code>0</code> means verified, <code>1</code> means a tier failed,
-        <code>2</code> means the file could not be read. Note the <code>errors</code>
-        line on a passing run: it reports that the Bitcoin attestation hasn't landed,
-        which for a minutes-old entry is expected, not a fault.
+        The block height comes from the proof itself, not from our metadata. The verifier
+        does not check how deep that block is. Matching it to the real chain is the step
+        described in section 5.
       </p>
 
       <h3 class="subsection-title">Prove it can say no</h3>
       <p class="body-text">
-        A verifier that approves everything is worthless. Change one character anywhere
-        in the bundle and run it again:
+        A verifier that approves everything is worthless. Change one character of the
+        entry's <code>content_hash</code> and run it again:
       </p>
 
       <div class="code-block mt-sm">
         <pre><code>{`receipt:            fail
 inclusion:          fail
+anchor_structural:  na
+
+anchor:             not yet anchored to Bitcoin (nothing to verify at this tier)
+
 errors:
   - echoed leaf_hash does not match recomputed value (recomputed used)
   - receipt signature does not verify against the recomputed leaf
   - inclusion proof does not reconstruct the stated merkle_root
-NOT verified`}</code></pre>
+  - ots_proof commits the root via a calendar attestation but is not yet anchored to a Bitcoin block
+
+NOT verified (failed: receipt, inclusion)`}</code></pre>
       </div>
 
       <p class="body-text mt-sm">
-        One altered character breaks three independent checks and the exit code becomes
-        <code>1</code>. Do this once, yourself, before trusting anything else here.
+        One altered character fails two tiers, the receipt and the inclusion proof, and
+        the exit code becomes <code>1</code>. The first error line is the verifier
+        noticing that the bundle's own <code>leaf_hash</code> no longer matches the
+        content, and recomputing it rather than trusting it. Do this once, yourself,
+        before trusting anything else here.
       </p>
 
-      <h3 class="subsection-title">Verifying with no network</h3>
+      <h3 class="subsection-title">Verifying without keys</h3>
       <p class="body-text">
-        <code>--offline</code> skips anything that would reach the network. Be precise
-        about what that buys: the inclusion proof is fully checkable offline, but the
-        receipt comes back <code>na</code> rather than <code>pass</code>, because
-        checking a signature needs the key directory. <code>--json</code> gives
-        machine-readable output.
+        The default run already needs no network: it checks the receipt against the keys
+        that ship inside the package. <code>--offline</code> is narrower. It uses no keys
+        at all, so the receipt comes back <code>na</code> instead of <code>pass</code>,
+        and only inclusion and the anchor proof are checked. <code>--json</code> gives
+        machine-readable output, and it is the only place the anchor status, height and
+        confirmations we recorded appear, under <code>reported</code>.
       </p>
     </section>
 
@@ -339,9 +381,10 @@ NOT verified`}</code></pre>
           otherwise is describing something nobody could afford.
         </li>
         <li>
-          <strong>Anchor metadata is reported, not trusted.</strong> The verifier
-          surfaces our recorded status, height and confirmations as our observation. It
-          does not treat them as a trust root, and neither should you.
+          <strong>Anchor metadata is reported, not trusted.</strong> The verifier never
+          presents our recorded status, block height or confirmations as verified. They
+          appear only in <code>--json</code> output, under <code>reported</code>, as our
+          observation. They are not a trust root, and you should not treat them as one.
         </li>
         <li>
           <strong>Matching a commitment to the real chain is outside the offline
